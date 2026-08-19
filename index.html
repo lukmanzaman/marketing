@@ -3,158 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>🎀 Marketing Visual Library</title>
+    <title>Marketing Visual Library</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+
         :root {
-            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-cute: 'Quicksand', sans-serif;
-            --bg-body: #FFFDF9;
+            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --bg-body: #F8F9FA;
             --card-bg: #FFFFFF;
-            --text-title: #2B2D42;
-            --text-body: #4A5568;
-            --text-muted: #718096;
-            --border-soft: #F1E5D8;
-            --shadow-card: 0 4px 14px rgba(180, 140, 120, 0.06);
-            --shadow-hover: 0 12px 24px -4px rgba(255, 101, 132, 0.15), 0 4px 10px rgba(180, 140, 120, 0.06);
-            --radius-sm: 10px;
-            --radius-md: 16px;
-            --radius-lg: 20px;
+            --card-border: #E5E7EB;
+            --text-title: #0F172A;
+            --text-body: #334155;
+            --text-muted: #64748B;
+            --border-soft: #E2E8F0;
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 12px 28px rgba(15, 23, 42, 0.08), 0 4px 10px rgba(0, 0, 0, 0.03);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
             --radius-full: 9999px;
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         html, body {
             width: 100%;
-            min-height: 100%;
+            height: 100%;
             font-family: var(--font-main);
             color: var(--text-body);
+            background-color: var(--bg-body);
+            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            transition: background-color 0.25s ease;
         }
 
         body.view-home {
             background-color: var(--bg-body);
-            background-image: 
-                radial-gradient(circle at 10% 15%, #FFEBF0 0%, transparent 35%),
-                radial-gradient(circle at 90% 20%, #EBF4FF 0%, transparent 40%),
-                radial-gradient(circle at 50% 90%, #F5ECFF 0%, transparent 45%);
-            background-attachment: fixed;
-            line-height: 1.5;
         }
 
         body.view-reader {
-            background-color: #000000 !important;
-            background-image: none !important;
-            color: #FFFFFF;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* DECORATIONS */
-        .decor-item {
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.5;
-            user-select: none;
-            animation: floatMove 12s ease-in-out infinite alternate;
-        }
-        @keyframes floatMove {
-            0% { transform: translateY(0) rotate(0deg) scale(1); }
-            50% { transform: translateY(-16px) rotate(8deg) scale(1.04); }
-            100% { transform: translateY(10px) rotate(-6deg) scale(0.96); }
+            background-color: #0F1117;
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1180px;
             margin: 0 auto;
-            padding: 2.5rem 1.25rem 4rem;
-            position: relative;
-            z-index: 1;
+            padding: 3.5rem 1.5rem 5rem;
         }
 
-        /* HERO & SEARCH */
         .hero {
             text-align: center;
-            margin-bottom: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin-bottom: 2.75rem;
         }
 
         .hero-title {
-            font-family: var(--font-cute);
-            font-size: clamp(1.8rem, 3.8vw, 2.5rem);
+            font-size: clamp(2rem, 5vw, 3rem);
             font-weight: 800;
             color: var(--text-title);
-            letter-spacing: -0.02em;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            line-height: 1.2;
-            margin-bottom: 1.25rem;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
         }
 
+        .hero-desc {
+            font-size: 0.98rem;
+            color: var(--text-muted);
+            max-width: 540px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* SEARCH BAR */
         .search-wrapper {
             position: relative;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
+            max-width: 640px;
+            margin: 0 auto 3rem;
+            z-index: 100;
         }
 
         .search-input-box {
             position: relative;
             display: flex;
             align-items: center;
+            background: #FFFFFF;
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius-full);
+            padding: 0.45rem 0.65rem 0.45rem 1.25rem;
+            box-shadow: var(--shadow-card);
+            transition: all 0.2s ease;
+        }
+
+        .search-input-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 8px 20px rgba(0, 0, 0, 0.06);
         }
 
         .search-icon-left {
-            position: absolute;
-            left: 1.1rem;
-            font-size: 1.05rem;
-            pointer-events: none;
-            color: #A0AEC0;
+            color: var(--text-muted);
+            margin-right: 0.75rem;
+            display: flex;
+            align-items: center;
         }
 
         .search-input {
-            width: 100%;
-            padding: 0.72rem 2.5rem 0.72rem 2.85rem;
-            background: #FFFFFF;
-            border: 1.5px solid #EAD8C7;
-            border-radius: var(--radius-full);
-            font-family: var(--font-main);
-            font-size: 0.92rem;
-            color: var(--text-title);
+            flex: 1;
+            border: none;
             outline: none;
-            box-shadow: 0 4px 14px rgba(180, 140, 120, 0.08);
-            transition: all 0.22s ease;
+            background: transparent;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-title);
         }
 
-        .search-input:focus {
-            border-color: #FF8FAB;
-            box-shadow: 0 6px 18px rgba(255, 143, 171, 0.22);
-            background: #FFFFFF;
+        .search-input::placeholder {
+            color: #94A3B8;
         }
 
         .search-clear-btn {
-            position: absolute;
-            right: 1rem;
-            background: none;
+            background: #F1F5F9;
             border: none;
-            color: #A0AEC0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 0.95rem;
             display: none;
-            padding: 0.2rem;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
         }
 
         .search-clear-btn:hover {
+            background: #E2E8F0;
             color: var(--text-title);
         }
 
@@ -164,19 +153,12 @@
             left: 0;
             right: 0;
             background: #FFFFFF;
-            border: 1.5px solid #F1E5D8;
+            border: 1px solid var(--border-soft);
             border-radius: var(--radius-md);
-            box-shadow: 0 16px 36px rgba(180, 140, 120, 0.18);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            z-index: 100;
             display: none;
-            text-align: left;
-            animation: fadeInDown 0.18s ease-out;
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
+            z-index: 1000;
         }
 
         .search-dropdown.active {
@@ -184,41 +166,36 @@
         }
 
         .dropdown-header {
-            padding: 0.5rem 0.9rem;
-            background: #FDF9F5;
-            border-bottom: 1px solid #F1E5D8;
-            font-size: 0.75rem;
+            padding: 0.65rem 1rem;
+            background: #F8FAFC;
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 0.72rem;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
-            font-family: var(--font-cute);
             display: flex;
-            align-items: center;
             justify-content: space-between;
         }
 
         .search-result-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
             padding: 0.75rem 1rem;
-            text-decoration: none;
-            color: var(--text-title);
-            border-bottom: 1px solid #F8EFE6;
-            transition: background 0.15s ease;
+            border-bottom: 1px solid #F1F5F9;
             cursor: pointer;
-        }
-
-        .search-result-item:last-child {
-            border-bottom: none;
+            transition: background 0.15s ease;
         }
 
         .search-result-item:hover, .search-result-item.selected {
-            background: #FFF5F8;
+            background: #F8FAFC;
         }
 
         .result-folder-icon {
-            font-size: 1.3rem;
-            flex-shrink: 0;
+            color: var(--primary);
+            margin-right: 0.85rem;
+            display: flex;
+            align-items: center;
         }
 
         .result-text-block {
@@ -228,76 +205,68 @@
 
         .result-title-line {
             font-size: 0.88rem;
-            font-weight: 700;
-            color: #2B2D42;
-            font-family: var(--font-cute);
+            font-weight: 600;
+            color: var(--text-title);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        .result-path-line {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 0.1rem;
         }
 
         .result-path-folder {
-            color: #FF5A87;
-            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .result-path-line {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
         }
 
         .result-arrow {
-            font-size: 0.85rem;
-            color: #FF8FAB;
-            flex-shrink: 0;
-            font-weight: 800;
+            color: #CBD5E1;
+            font-size: 1.1rem;
+            margin-left: 0.5rem;
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+
+        .search-result-item:hover .result-arrow {
+            color: var(--primary);
+            transform: translateX(3px);
         }
 
         .match-mark {
-            background-color: #FED7E2;
-            color: #DB2777;
-            padding: 0.05rem 0.2rem;
+            background: #DBEAFE;
+            color: #1D4ED8;
+            padding: 0.1rem 0.25rem;
             border-radius: 4px;
-            font-weight: 800;
+            font-weight: 600;
         }
 
         .dropdown-empty {
-            padding: 1.25rem 1rem;
+            padding: 1.75rem;
             text-align: center;
-            color: var(--text-muted);
             font-size: 0.85rem;
+            color: var(--text-muted);
         }
 
         /* GRID & FOLDER CARDS */
         .folders-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-            gap: 1.25rem;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 1.35rem;
         }
 
         .folder-card {
             background: var(--card-bg);
             border-radius: var(--radius-lg);
-            border: 1.5px solid var(--border-soft);
+            border: 1px solid var(--card-border);
             box-shadow: var(--shadow-card);
-            padding: 1.25rem;
+            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: 1rem;
-            position: relative;
-            z-index: 1;
-            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease, border-color 0.22s ease;
-            color: inherit;
-        }
-
-        .folder-card.active-dropdown,
-        .folder-card:has(.card-dropdown-menu.show) {
-            z-index: 999;
+            overflow: visible;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .folder-card::before {
@@ -306,48 +275,48 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: var(--theme-accent, #FF6584);
-            opacity: 0.85;
+            height: 3px;
+            background: var(--theme-accent, var(--primary));
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            transition: height 0.2s ease;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
         }
 
         .folder-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
+            border-color: #CBD5E1;
             box-shadow: var(--shadow-hover);
-            border-color: #F8B4C4;
-        }
-
-        .folder-card:hover::before {
-            height: 6px;
         }
 
         .card-click-area {
+            padding: 1.35rem 1.35rem 0.85rem;
             cursor: pointer;
         }
 
         .card-top {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.85rem;
+            margin-bottom: 0.75rem;
         }
 
         .folder-icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
+            background: #F8FAFC;
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius-md);
+            color: var(--theme-accent, var(--primary));
             flex-shrink: 0;
-            transition: transform 0.25s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease;
         }
 
         .folder-card:hover .folder-icon-box {
-            transform: scale(1.1) rotate(5deg);
+            transform: scale(1.05);
+            background: #FFFFFF;
         }
 
         .folder-info {
@@ -356,90 +325,69 @@
         }
 
         .number-badge {
-            font-family: var(--font-cute);
-            font-size: 0.72rem;
-            font-weight: 800;
-            padding: 0.12rem 0.5rem;
-            border-radius: var(--radius-full);
-            background: #F3E8FF;
-            color: #7C3AED;
             display: inline-block;
-            margin-bottom: 0.2rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: #F1F5F9;
+            padding: 0.1rem 0.45rem;
+            border-radius: 4px;
+            margin-bottom: 0.35rem;
+            letter-spacing: 0.04em;
         }
 
         .folder-title {
-            font-family: var(--font-cute);
-            font-size: 1.12rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--text-title);
-            line-height: 1.25;
-            word-break: break-word;
+            line-height: 1.35;
         }
 
         .card-bottom-row {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding-top: 0.75rem;
-            border-top: 1px dashed #F1E5D8;
+            justify-content: space-between;
+            padding: 0 1.35rem 1.25rem;
             position: relative;
         }
 
-        /* CARD DROPDOWN LIST (HOME VIEW) */
         .card-dropdown-wrapper {
             position: relative;
-            flex: 1;
         }
 
         .btn-card-list {
-            width: 100%;
-            background: #FDF4F6;
-            color: #BE123C;
-            border: 1.2px solid #FECDD3;
-            font-family: var(--font-cute);
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 0.45rem 0.75rem;
-            border-radius: var(--radius-full);
             display: inline-flex;
             align-items: center;
-            justify-content: space-between;
             gap: 0.35rem;
+            background: #F8FAFC;
+            border: 1px solid var(--border-soft);
+            color: var(--text-body);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.42rem 0.8rem;
+            border-radius: var(--radius-full);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
         .btn-card-list:hover, .btn-card-list.active {
-            background: #FFE4EC;
-            border-color: #FF5A87;
-            color: #9F1239;
-            box-shadow: 0 2px 8px rgba(255, 90, 135, 0.2);
-        }
-
-        .btn-card-list .picker-arrow {
-            font-size: 0.65rem;
-            transition: transform 0.2s ease;
-        }
-
-        .btn-card-list.active .picker-arrow {
-            transform: rotate(180deg);
+            background: #FFFFFF;
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .card-dropdown-menu {
             position: absolute;
-            top: calc(100% + 6px);
+            bottom: calc(100% + 8px);
             left: 0;
-            right: 0;
-            width: 100%;
-            min-width: 270px;
+            width: 280px;
             background: #FFFFFF;
-            border: 1.5px solid #F1E5D8;
+            border: 1px solid var(--border-soft);
             border-radius: var(--radius-md);
-            box-shadow: 0 14px 36px rgba(180, 140, 120, 0.22);
-            z-index: 100;
-            display: none;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
             overflow: hidden;
-            animation: fadeInDown 0.18s ease-out;
+            display: none;
+            z-index: 1000;
         }
 
         .card-dropdown-menu.show {
@@ -447,22 +395,19 @@
         }
 
         .card-dropdown-header {
-            padding: 0.5rem 0.8rem;
-            background: #FDF9F5;
-            border-bottom: 1px solid #F1E5D8;
+            padding: 0.6rem 0.95rem;
+            background: #F8FAFC;
+            border-bottom: 1px solid var(--border-soft);
             font-size: 0.72rem;
             font-weight: 700;
-            color: var(--text-muted);
-            font-family: var(--font-cute);
+            color: var(--text-title);
             display: flex;
-            align-items: center;
             justify-content: space-between;
         }
 
         .card-dropdown-list {
-            max-height: 175px; /* Maksimal 5 item terlihat sebelum scroll */
+            max-height: 180px;
             overflow-y: auto;
-            overscroll-behavior: contain;
             padding: 0.25rem 0;
         }
 
@@ -470,87 +415,52 @@
             width: 5px;
         }
         .card-dropdown-list::-webkit-scrollbar-thumb {
-            background: #FFB3C6;
+            background: #CBD5E1;
             border-radius: 4px;
         }
 
         .card-dropdown-item {
+            padding: 0.48rem 0.95rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.45rem 0.8rem;
-            color: var(--text-title);
+            color: var(--text-body);
             font-size: 0.8rem;
             cursor: pointer;
-            transition: background 0.15s ease, color 0.15s ease;
-            border-bottom: 1px solid #FAF0E6;
-        }
-
-        .card-dropdown-item:last-child {
-            border-bottom: none;
+            transition: background 0.15s ease;
         }
 
         .card-dropdown-item:hover {
-            background: #FFF0F5;
-            color: #FF4D6D;
+            background: #F1F5F9;
+            color: var(--primary);
         }
 
         .btn-read {
-            background: linear-gradient(135deg, #FF758C 0%, #FF5A87 100%);
-            color: #FFFFFF;
-            border: none;
-            padding: 0.45rem 0.95rem;
-            border-radius: var(--radius-full);
-            font-family: var(--font-cute);
-            font-size: 0.82rem;
-            font-weight: 700;
-            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            box-shadow: 0 3px 10px rgba(255, 90, 135, 0.22);
-            transition: all 0.2s ease;
-            text-decoration: none;
-            flex-shrink: 0;
+            background: var(--primary);
+            color: #FFFFFF;
+            border: none;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.45rem 1.05rem;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+            transition: all 0.15s ease;
         }
 
         .btn-read:hover {
-            background: linear-gradient(135deg, #FF5A87 0%, #E64372 100%);
+            background: var(--primary-hover);
             transform: translateY(-1px);
-            box-shadow: 0 5px 14px rgba(255, 90, 135, 0.32);
-        }
-
-        .empty-box {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 3.5rem 1.5rem;
-            background: #FFFFFF;
-            border-radius: var(--radius-lg);
-            border: 2px dashed #EBDCCF;
-        }
-
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 0.6rem;
-        }
-
-        .empty-title {
-            font-family: var(--font-cute);
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-title);
         }
 
         .footer-bar {
             text-align: center;
-            margin-top: 3.5rem;
+            padding: 3.5rem 0 1rem;
             font-size: 0.82rem;
             color: var(--text-muted);
-        }
-
-        @media (max-width: 640px) {
-            .container { padding: 1.75rem 1rem 3rem; }
-            .folders-grid { grid-template-columns: 1fr; }
         }
 
         /* ========================================================
@@ -565,13 +475,13 @@
             display: flex;
             align-items: center;
             gap: 0.55rem;
-            background: rgba(18, 18, 20, 0.88);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 0.4rem 0.85rem;
+            background: rgba(15, 17, 23, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 0.35rem 0.85rem;
             border-radius: var(--radius-full);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             max-width: 95vw;
             opacity: 1;
             visibility: visible;
@@ -585,120 +495,69 @@
             transform: translateX(-50%) translateY(-24px) !important;
         }
 
-        .reader-nav:hover, .reader-nav:focus-within {
-            opacity: 1 !important;
-            visibility: visible !important;
-            pointer-events: auto !important;
-            transform: translateX(-50%) translateY(0) !important;
-        }
+        
 
-        .nav-fullscreen-btn {
-            background: rgba(255, 255, 255, 0.15);
+        .nav-fullscreen-btn, .nav-back-btn {
+            background: rgba(255, 255, 255, 0.08);
             color: #FFFFFF;
-            border: none;
-            font-size: 0.92rem;
-            padding: 0.28rem 0.55rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
             border-radius: var(--radius-full);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            transition: background 0.2s ease, transform 0.15s ease;
-        }
-
-        .nav-fullscreen-btn:hover {
-            background: #FF6584;
-            transform: scale(1.08);
-        }
-
-        .nav-back-btn {
-            background: rgba(255, 255, 255, 0.15);
-            color: #FFFFFF;
-            border: none;
-            font-family: var(--font-cute);
-            font-size: 0.85rem;
-            font-weight: 700;
-            padding: 0.3rem 0.75rem;
-            border-radius: var(--radius-full);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            cursor: pointer;
-            transition: background 0.2s ease, transform 0.15s ease;
-        }
-
-        .nav-back-btn:hover {
-            background: #FF6584;
-            transform: scale(1.04);
-        }
-
-        .nav-title-text {
-            font-family: var(--font-cute);
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #F3F4F6;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 160px;
-        }
-
-        /* DROPDOWN ARTICLE SELECTOR / GOTO LIST IN READER */
-        .nav-picker-wrapper {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .nav-picker-btn {
-            background: rgba(255, 101, 132, 0.22);
-            color: #FF8FAB;
-            border: 1px solid rgba(255, 101, 132, 0.4);
-            font-family: var(--font-cute);
-            font-size: 0.78rem;
-            font-weight: 800;
-            padding: 0.25rem 0.65rem;
-            border-radius: var(--radius-full);
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .nav-fullscreen-btn:hover, .nav-back-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .nav-title-text {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            max-width: 220px;
             white-space: nowrap;
-            transition: all 0.2s ease;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-picker-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: all 0.15s ease;
         }
 
         .nav-picker-btn:hover, .nav-picker-btn.active {
-            background: #FF5A87;
-            color: #FFFFFF;
-            border-color: #FF5A87;
-            box-shadow: 0 0 12px rgba(255, 90, 135, 0.5);
-        }
-
-        .nav-picker-btn .picker-arrow {
-            font-size: 0.68rem;
-            transition: transform 0.2s ease;
-        }
-
-        .nav-picker-btn.active .picker-arrow {
-            transform: rotate(180deg);
+            background: #FFFFFF;
+            color: #0F172A;
         }
 
         .nav-picker-dropdown {
             position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            width: 300px;
-            max-width: 88vw;
-            background: rgba(18, 18, 22, 0.96);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1.5px solid rgba(255, 101, 132, 0.35);
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 290px;
+            background: #1E222D;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: var(--radius-md);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 24px rgba(255, 90, 135, 0.18);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
             overflow: hidden;
-            z-index: 10001;
             display: none;
-            animation: fadeInDown 0.18s ease-out;
         }
 
         .nav-picker-dropdown.show {
@@ -707,84 +566,70 @@
 
         .nav-picker-header {
             padding: 0.55rem 0.85rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             font-size: 0.72rem;
             font-weight: 700;
-            color: #9CA3AF;
-            font-family: var(--font-cute);
+            color: #94A3B8;
             display: flex;
-            align-items: center;
             justify-content: space-between;
         }
 
         .picker-total-badge {
-            background: rgba(255, 101, 132, 0.25);
-            color: #FF8FAB;
+            background: rgba(255, 255, 255, 0.15);
+            color: #FFFFFF;
             padding: 0.1rem 0.45rem;
             border-radius: var(--radius-full);
             font-size: 0.68rem;
         }
 
         .nav-picker-list {
-            max-height: 175px; /* Maksimal 5 item terlihat sebelum scroll */
+            max-height: 180px;
             overflow-y: auto;
-            overscroll-behavior: contain;
             padding: 0.3rem 0;
         }
 
         .nav-picker-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        .nav-picker-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
+            width: 5px;
         }
         .nav-picker-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 101, 132, 0.4);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
-        }
-        .nav-picker-list::-webkit-scrollbar-thumb:hover {
-            background: #FF5A87;
         }
 
         .nav-picker-item {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.55rem;
             padding: 0.48rem 0.85rem;
-            color: #E5E7EB;
-            font-size: 0.8rem;
-            text-decoration: none;
+            color: #CBD5E1;
+            font-size: 0.78rem;
             cursor: pointer;
-            transition: background 0.15s ease, color 0.15s ease;
-            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
         }
 
         .nav-picker-item:hover {
-            background: rgba(255, 101, 132, 0.15);
+            background: rgba(255, 255, 255, 0.08);
             color: #FFFFFF;
         }
 
         .nav-picker-item.active {
-            background: rgba(255, 90, 135, 0.22);
-            color: #FF8FAB;
-            border-left-color: #FF5A87;
+            background: var(--primary);
+            color: #FFFFFF;
             font-weight: 700;
         }
 
         .picker-item-num {
-            font-family: var(--font-cute);
-            font-weight: 800;
-            font-size: 0.72rem;
-            color: #FF8FAB;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94A3B8;
             background: rgba(255, 255, 255, 0.08);
-            padding: 0.1rem 0.4rem;
-            border-radius: 6px;
-            flex-shrink: 0;
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
         }
 
         .nav-picker-item.active .picker-item-num {
-            background: #FF5A87;
+            background: rgba(255, 255, 255, 0.25);
             color: #FFFFFF;
         }
 
@@ -794,8 +639,6 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-family: var(--font-main);
-            line-height: 1.3;
         }
 
         .restore-toast {
@@ -803,23 +646,18 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(30px);
-            background: rgba(30, 30, 36, 0.92);
+            background: #0F172A;
             color: #FFFFFF;
-            border: 1px solid #FF6584;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 0.55rem 1.25rem;
             border-radius: var(--radius-full);
-            font-family: var(--font-cute);
             font-size: 0.85rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            box-shadow: 0 8px 24px rgba(255, 101, 132, 0.25);
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
             z-index: 10000;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .restore-toast.show {
@@ -835,7 +673,7 @@
             display: flex;
             flex-direction: column;
             align-items: stretch;
-            background-color: #000000;
+            background-color: #0F1117;
         }
 
         .article-frame {
@@ -843,8 +681,8 @@
             display: block;
             margin: 0;
             padding: 0;
-            border-bottom: 1px solid #000000;
-            background-color: #080808;
+            border-bottom: 1px solid #0F1117;
+            background-color: #151821;
             position: relative;
             line-height: 0;
             aspect-ratio: 1 / 3;
@@ -873,7 +711,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(180deg, #111114 0%, #1a1a1f 50%, #111114 100%);
+            background: #181B26;
             z-index: 1;
             pointer-events: none;
             opacity: 1;
@@ -886,29 +724,28 @@
         }
 
         .feed-footer {
-            background-color: #0d0d11;
+            background-color: #0F1117;
             padding: 4rem 1.5rem 6rem;
             text-align: center;
-            color: #9CA3AF;
+            color: #94A3B8;
         }
 
         .finish-badge {
-            font-size: 2.2rem;
+            color: var(--primary);
             margin-bottom: 0.75rem;
             display: inline-block;
         }
 
         .finish-title {
-            font-family: var(--font-cute);
             font-size: 1.35rem;
-            font-weight: 800;
+            font-weight: 700;
             color: #FFFFFF;
             margin-bottom: 0.4rem;
         }
 
         .finish-sub {
             font-size: 0.9rem;
-            color: #8E8EA0;
+            color: #94A3B8;
             margin-bottom: 1.75rem;
         }
 
@@ -916,17 +753,16 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: linear-gradient(135deg, #FF758C 0%, #FF5A87 100%);
-            color: #FFFFFF;
+            background: #FFFFFF;
+            color: #0F172A;
             border: none;
             cursor: pointer;
-            font-family: var(--font-cute);
-            font-size: 0.95rem;
-            font-weight: 700;
-            padding: 0.75rem 1.75rem;
+            font-size: 0.92rem;
+            font-weight: 600;
+            padding: 0.7rem 1.75rem;
             border-radius: var(--radius-full);
-            box-shadow: 0 6px 18px rgba(255, 90, 135, 0.35);
-            transition: transform 0.2s ease;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+            transition: transform 0.15s ease;
         }
 
         .btn-finish-back:hover {
@@ -940,19 +776,14 @@
          HOME VIEW: LIBRARY GRID & LIVE SEARCH
          ========================================== -->
     <div id="homeView">
-        <div class="decor-item" style="top: 8%; left: 4%; font-size: 2.2rem;">🌸</div>
-        <div class="decor-item" style="top: 18%; right: 5%; font-size: 2rem; animation-delay: -2s;">✨</div>
-        <div class="decor-item" style="bottom: 12%; left: 5%; font-size: 2rem; animation-delay: -5s;">🧁</div>
-        <div class="decor-item" style="bottom: 22%; right: 6%; font-size: 2.2rem; animation-delay: -8s;">🎨</div>
-
         <div class="container">
             <header class="hero">
-                <h1 class="hero-title">🎀 Marketing Visual Library</h1>
+                <h1 class="hero-title">Marketing Visual Library</h1>
 
                 <!-- REAL-TIME SEARCH -->
                 <div class="search-wrapper" id="searchWrapper">
                     <div class="search-input-box">
-                        <span class="search-icon-left">🔍</span>
+                        <span class="search-icon-left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
                         <input 
                             type="text" 
                             id="globalSearchInput" 
@@ -984,9 +815,7 @@
             >
                 <div class="card-click-area" onclick="openReader('01-psikologi-bias-kognitif');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #FFF0F5; border: 1.5px solid #FFD1DC;">
-                            🌸
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#01</span>
                             <h2 class="folder-title">Psikologi Bias Kognitif</h2>
@@ -998,7 +827,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (118)</span>
+                            <span>Daftar Artikel (118)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1013,7 +842,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('01-psikologi-bias-kognitif');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1024,9 +853,7 @@
             >
                 <div class="card-click-area" onclick="openReader('02-framework-model-strategi');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #F0F7FF; border: 1.5px solid #CBE2FE;">
-                            🌊
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#02</span>
                             <h2 class="folder-title">Framework Model Strategi</h2>
@@ -1038,7 +865,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (93)</span>
+                            <span>Daftar Artikel (93)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1053,7 +880,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('02-framework-model-strategi');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1064,9 +891,7 @@
             >
                 <div class="card-click-area" onclick="openReader('03-metrik-dan-rumus');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #F0FDF4; border: 1.5px solid #BBF7D0;">
-                            🌿
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#03</span>
                             <h2 class="folder-title">Metrik Dan Rumus</h2>
@@ -1078,7 +903,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (75)</span>
+                            <span>Daftar Artikel (75)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1093,7 +918,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('03-metrik-dan-rumus');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1104,9 +929,7 @@
             >
                 <div class="card-click-area" onclick="openReader('04-kampanye-legendaris-dunia');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #FFFBEB; border: 1.5px solid #FDE68A;">
-                            🍯
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#04</span>
                             <h2 class="folder-title">Kampanye Legendaris Dunia</h2>
@@ -1118,7 +941,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (114)</span>
+                            <span>Daftar Artikel (114)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1133,7 +956,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('04-kampanye-legendaris-dunia');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1144,9 +967,7 @@
             >
                 <div class="card-click-area" onclick="openReader('05-brand-kampanye-indonesia');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #FAF5FF; border: 1.5px solid #E9D5FF;">
-                            🔮
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#05</span>
                             <h2 class="folder-title">Brand Kampanye Indonesia</h2>
@@ -1158,7 +979,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (56)</span>
+                            <span>Daftar Artikel (56)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1173,7 +994,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('05-brand-kampanye-indonesia');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1184,9 +1005,7 @@
             >
                 <div class="card-click-area" onclick="openReader('06-tokoh-dan-pemikir');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #FFF1F2; border: 1.5px solid #FECDD3;">
-                            🍓
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#06</span>
                             <h2 class="folder-title">Tokoh Dan Pemikir</h2>
@@ -1198,7 +1017,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (70)</span>
+                            <span>Daftar Artikel (70)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1213,7 +1032,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('06-tokoh-dan-pemikir');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1224,9 +1043,7 @@
             >
                 <div class="card-click-area" onclick="openReader('07-copywriting-storytelling');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #ECFEFF; border: 1.5px solid #A5F3FC;">
-                            💎
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#07</span>
                             <h2 class="folder-title">Copywriting Storytelling</h2>
@@ -1238,7 +1055,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (85)</span>
+                            <span>Daftar Artikel (85)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1253,7 +1070,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('07-copywriting-storytelling');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1264,9 +1081,7 @@
             >
                 <div class="card-click-area" onclick="openReader('08-channel-taktik-digital');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #FFF7ED; border: 1.5px solid #FED7AA;">
-                            🍊
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#08</span>
                             <h2 class="folder-title">Channel Taktik Digital</h2>
@@ -1278,7 +1093,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (160)</span>
+                            <span>Daftar Artikel (160)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1293,7 +1108,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('08-channel-taktik-digital');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1304,9 +1119,7 @@
             >
                 <div class="card-click-area" onclick="openReader('09-branding-identitas-visual');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #FDF4FF; border: 1.5px solid #F5D0FE;">
-                            🎀
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#09</span>
                             <h2 class="folder-title">Branding Identitas Visual</h2>
@@ -1318,7 +1131,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (94)</span>
+                            <span>Daftar Artikel (94)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1333,7 +1146,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('09-branding-identitas-visual');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1344,9 +1157,7 @@
             >
                 <div class="card-click-area" onclick="openReader('10-perilaku-konsumen-segmentasi');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #F0FDFA; border: 1.5px solid #99F6E4;">
-                            🍀
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#10</span>
                             <h2 class="folder-title">Perilaku Konsumen Segmentasi</h2>
@@ -1358,7 +1169,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (78)</span>
+                            <span>Daftar Artikel (78)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1373,7 +1184,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('10-perilaku-konsumen-segmentasi');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1384,9 +1195,7 @@
             >
                 <div class="card-click-area" onclick="openReader('11-pricing-psikologi-harga');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #FEFCE8; border: 1.5px solid #FEF08A;">
-                            ⭐
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#11</span>
                             <h2 class="folder-title">Pricing Psikologi Harga</h2>
@@ -1398,7 +1207,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (60)</span>
+                            <span>Daftar Artikel (60)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1413,7 +1222,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('11-pricing-psikologi-harga');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1424,9 +1233,7 @@
             >
                 <div class="card-click-area" onclick="openReader('12-sejarah-era-marketing');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #F5F3FF; border: 1.5px solid #DDD6FE;">
-                            ✨
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#12</span>
                             <h2 class="folder-title">Sejarah Era Marketing</h2>
@@ -1438,7 +1245,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (51)</span>
+                            <span>Daftar Artikel (51)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1453,7 +1260,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('12-sejarah-era-marketing');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1464,9 +1271,7 @@
             >
                 <div class="card-click-area" onclick="openReader('13-hukum-prinsip-mitos');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #FFF0F5; border: 1.5px solid #FFD1DC;">
-                            🌸
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#13</span>
                             <h2 class="folder-title">Hukum Prinsip Mitos</h2>
@@ -1478,7 +1283,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (50)</span>
+                            <span>Daftar Artikel (50)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1493,7 +1298,7 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('13-hukum-prinsip-mitos');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
@@ -1504,9 +1309,7 @@
             >
                 <div class="card-click-area" onclick="openReader('14-marketing-ai-masa-depan');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: #F0F7FF; border: 1.5px solid #CBE2FE;">
-                            🌊
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             <span class="number-badge">#14</span>
                             <h2 class="folder-title">Marketing Ai Masa Depan</h2>
@@ -1518,7 +1321,7 @@
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (55)</span>
+                            <span>Daftar Artikel (55)</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -1533,14 +1336,14 @@
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader('14-marketing-ai-masa-depan');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>
             </main>
 
             <footer class="footer-bar">
-                <p>Marketing Visual Vault 🌸 • Baked Standalone HTML • Total 1159 Artikel (14 Folder)</p>
+                <p>Marketing Visual Vault • Baked Standalone HTML • Total 1159 Artikel (14 Folder)</p>
                 <p style="font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.7;">Diperbarui: 2026-08-19 14:49:44</p>
             </footer>
         </div>
@@ -1587,11 +1390,11 @@
         <main class="doom-feed" id="doomFeed"></main>
 
         <footer class="feed-footer">
-            <div class="finish-badge">🎉✨</div>
+            <div class="finish-badge"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
             <h3 class="finish-title">Semua Artikel Selesai Dibaca!</h3>
             <p class="finish-sub" id="finishSubText">Total artikel visual telah ditampilkan.</p>
             <button type="button" class="btn-finish-back" id="finishBackBtn">
-                <span>🌸</span>
+                
                 <span>Kembali ke Library</span>
             </button>
         </footer>
@@ -1648,57 +1451,23 @@
         let lastScrollY = 0;
         let currentActiveArtIdx = 1;
 
-        // Controller State untuk reader-nav (Auto-hide & Trigger scroll)
-        let navIdleTimeout = null;
-        let navTopStayTimeout = null;
-        let hasTriggeredAtTop = false;
-        let scrollUpAccumulator = 0;
-        let scrollUpStartTime = 0;
-        let scrollUpResetTimer = null;
-        let isNavHovered = false;
-
-        function showNav(autoHide = true) {
+        // Controller State & Visibility untuk reader-nav (Default: lenyap, toggle via tap/click)
+        function showNav() {
             nav.classList.remove('nav-hidden');
-            if (autoHide) {
-                scheduleNavHide(1000);
-            }
         }
 
         function hideNav() {
-            if (navPickerDropdown && navPickerDropdown.classList.contains('show')) {
-                return;
-            }
-            if (isNavHovered) {
-                return;
-            }
-            if (navIdleTimeout) {
-                clearTimeout(navIdleTimeout);
-                navIdleTimeout = null;
-            }
+            closePickerDropdown();
             nav.classList.add('nav-hidden');
         }
 
-        function scheduleNavHide(delay = 1000) {
-            if (navIdleTimeout) clearTimeout(navIdleTimeout);
-            navIdleTimeout = setTimeout(() => {
+        function toggleNav() {
+            if (nav.classList.contains('nav-hidden')) {
+                showNav();
+            } else {
                 hideNav();
-            }, delay);
+            }
         }
-
-        nav.addEventListener('mouseenter', () => {
-            isNavHovered = true;
-            if (navIdleTimeout) {
-                clearTimeout(navIdleTimeout);
-                navIdleTimeout = null;
-            }
-        });
-
-        nav.addEventListener('mouseleave', () => {
-            isNavHovered = false;
-            if (!nav.classList.contains('nav-hidden')) {
-                scheduleNavHide(1000);
-            }
-        });
 
         function getStorage(key) {
             try { return localStorage.getItem(key) || ''; } catch(e) { return ''; }
@@ -1772,26 +1541,12 @@
         function renderHome() {
             currentActiveFolder = null;
             closePickerDropdown();
-            if (navIdleTimeout) {
-                clearTimeout(navIdleTimeout);
-                navIdleTimeout = null;
-            }
-            if (navTopStayTimeout) {
-                clearTimeout(navTopStayTimeout);
-                navTopStayTimeout = null;
-            }
-            if (scrollUpResetTimer) {
-                clearTimeout(scrollUpResetTimer);
-                scrollUpResetTimer = null;
-            }
-            hasTriggeredAtTop = false;
-            scrollUpAccumulator = 0;
-            scrollUpStartTime = 0;
+            hideNav();
 
             document.body.className = 'view-home';
             readerView.style.display = 'none';
             homeView.style.display = 'block';
-            document.title = '🎀 Marketing Visual Library';
+            document.title = 'Marketing Visual Library';
 
             if (imageObserver) {
                 imageObserver.disconnect();
@@ -1806,17 +1561,6 @@
             homeScrollY = window.scrollY;
             currentActiveFolder = folder;
             currentActiveArtIdx = targetArt > 0 ? targetArt : 1;
-            scrollUpAccumulator = 0;
-            scrollUpStartTime = 0;
-            if (scrollUpResetTimer) {
-                clearTimeout(scrollUpResetTimer);
-                scrollUpResetTimer = null;
-            }
-            if (navTopStayTimeout) {
-                clearTimeout(navTopStayTimeout);
-                navTopStayTimeout = null;
-            }
-            hasTriggeredAtTop = (targetArt <= 1 && window.scrollY <= 10);
 
             document.body.className = 'view-reader';
             homeView.style.display = 'none';
@@ -1828,8 +1572,8 @@
             pickerTotalBadge.textContent = `${folder.imageCount} Item`;
             finishSubText.textContent = `Total ${folder.imageCount} artikel visual di folder ini telah ditampilkan.`;
 
-            // Tampilkan navbar dan jadwalkan auto-hide 1s jika user diam
-            showNav(true);
+            // Default lenyap saat masuk reader
+            hideNav();
 
             // Build Dropdown Article Picker List (max 10 viewed before scroll)
             let pickerHtml = '';
@@ -1938,10 +1682,6 @@
             } else {
                 navPickerDropdown.classList.add('show');
                 navPickerBtn.classList.add('active');
-                if (navIdleTimeout) {
-                    clearTimeout(navIdleTimeout);
-                    navIdleTimeout = null;
-                }
                 const activeItem = navPickerList.querySelector('.nav-picker-item.active');
                 if (activeItem) {
                     activeItem.scrollIntoView({ block: 'nearest' });
@@ -1952,9 +1692,6 @@
         function closePickerDropdown() {
             navPickerDropdown.classList.remove('show');
             navPickerBtn.classList.remove('active');
-            if (!nav.classList.contains('nav-hidden')) {
-                scheduleNavHide(1000);
-            }
         }
 
         navPickerBtn.addEventListener('click', (e) => {
@@ -2034,80 +1771,11 @@
         // Scroll listener for reader
         function handleReaderScroll() {
             if (!currentActiveFolder) return;
-            const currentScrollY = window.scrollY;
-            const deltaY = lastScrollY - currentScrollY; // > 0 jika scroll ke atas, < 0 jika scroll ke bawah
 
-            if (currentScrollY > 100 && deltaY < 0) {
-                // Scroll turun: segera sembunyikan navbar & reset tracking scroll naik / puncak
-                scrollUpAccumulator = 0;
-                scrollUpStartTime = 0;
-                if (scrollUpResetTimer) {
-                    clearTimeout(scrollUpResetTimer);
-                    scrollUpResetTimer = null;
-                }
-                if (navTopStayTimeout) {
-                    clearTimeout(navTopStayTimeout);
-                    navTopStayTimeout = null;
-                }
-                hasTriggeredAtTop = false;
+            // Sembunyikan navbar saat user mulai scroll membaca
+            if (!nav.classList.contains('nav-hidden')) {
                 hideNav();
-            } else if (deltaY > 0) {
-                // Scroll naik
-                const now = Date.now();
-                if (scrollUpAccumulator === 0 || scrollUpStartTime === 0) {
-                    scrollUpStartTime = now;
-                }
-
-                const elapsed = now - scrollUpStartTime;
-
-                if (elapsed > 2500) {
-                    // Lebih dari 2.5 detik -> scroll santai / membaca perlahan, reset window
-                    scrollUpAccumulator = deltaY;
-                    scrollUpStartTime = now;
-                } else {
-                    scrollUpAccumulator += deltaY;
-                }
-
-                // Reset akumulator jika berhenti scroll > 350ms (bukan scroll nonstop)
-                if (scrollUpResetTimer) clearTimeout(scrollUpResetTimer);
-                scrollUpResetTimer = setTimeout(() => {
-                    scrollUpAccumulator = 0;
-                    scrollUpStartTime = 0;
-                }, 350);
-
-                // Hanya muncul jika mencapai >= 2000px dalam rentang max 2.5 detik nonstop
-                if (scrollUpAccumulator >= 2000 && elapsed <= 2500) {
-                    showNav(true);
-                    scrollUpAccumulator = 0;
-                    scrollUpStartTime = 0;
-                    if (scrollUpResetTimer) clearTimeout(scrollUpResetTimer);
-                } else if (!nav.classList.contains('nav-hidden')) {
-                    scheduleNavHide(1000);
-                }
             }
-
-            // Cek kondisi di puncak (scrollY <= 10): muncul setelah 3 detik di puncak (hanya 1x per kunjungan puncak)
-            if (currentScrollY <= 10) {
-                if (!hasTriggeredAtTop && !navTopStayTimeout && nav.classList.contains('nav-hidden')) {
-                    navTopStayTimeout = setTimeout(() => {
-                        if (window.scrollY <= 10) {
-                            showNav(true);
-                            hasTriggeredAtTop = true;
-                        }
-                        navTopStayTimeout = null;
-                    }, 3000);
-                }
-            } else {
-                if (navTopStayTimeout) {
-                    clearTimeout(navTopStayTimeout);
-                    navTopStayTimeout = null;
-                }
-                if (currentScrollY > 100) {
-                    hasTriggeredAtTop = false;
-                }
-            }
-
-            lastScrollY = currentScrollY;
 
             if (saveScrollTimeout) clearTimeout(saveScrollTimeout);
             saveScrollTimeout = setTimeout(() => {
@@ -2135,6 +1803,24 @@
             }, 150);
         }
         window.addEventListener('scroll', handleReaderScroll, { passive: true });
+
+        // Tap/Click Screen Listener: Tekan atas muncul, tekan bagian lain lenyap
+        document.addEventListener('click', (e) => {
+            if (!currentActiveFolder) return;
+
+            // Jika klik terjadi di dalam navbar / dropdown / restore toast, biarkan event berjalan normal
+            if (e.target.closest('#readerNav') || e.target.closest('#restoreToast')) {
+                return;
+            }
+
+            // Jika user menekan area atas layar (<= 90px dari atas):
+            if (e.clientY <= 90) {
+                toggleNav();
+            } else {
+                // Jika menekan bagian lain layar (> 90px): sembunyikan navbar
+                hideNav();
+            }
+        });
 
         // ================= SEARCH IMPLEMENTATION =================
         const searchInput = document.getElementById('globalSearchInput');
@@ -2263,4 +1949,5 @@
         handleRouteChange();
     </script>
 </body>
+</html>
 </html>
