@@ -733,26 +733,51 @@ if ($activeFolderParam !== '' && isset($folderMap[$activeFolderParam])) {
             z-index: 9999;
             display: flex;
             align-items: center;
-            gap: 0.65rem;
-            background: rgba(18, 18, 20, 0.85);
+            gap: 0.55rem;
+            background: rgba(18, 18, 20, 0.88);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            padding: 0.4rem 0.9rem;
+            padding: 0.4rem 0.85rem;
             border-radius: var(--radius-full);
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-            max-width: 92vw;
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            max-width: 95vw;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
         }
 
         .reader-nav.nav-hidden {
-            opacity: 0.15;
-            transform: translateX(-50%) translateY(-6px);
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            transform: translateX(-50%) translateY(-24px) !important;
         }
 
-        .reader-nav:hover {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+        .reader-nav:hover, .reader-nav:focus-within {
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            transform: translateX(-50%) translateY(0) !important;
+        }
+
+        .nav-fullscreen-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: #FFFFFF;
+            border: none;
+            font-size: 0.92rem;
+            padding: 0.28rem 0.55rem;
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+
+        .nav-fullscreen-btn:hover {
+            background: #FF6584;
+            transform: scale(1.08);
         }
 
         .nav-back-btn {
@@ -1027,22 +1052,6 @@ if ($activeFolderParam !== '' && isset($folderMap[$activeFolderParam])) {
         .article-frame.loaded::after {
             opacity: 0;
             display: none;
-        }
-
-        .article-num-watermark {
-            position: absolute;
-            top: 14px;
-            right: 14px;
-            z-index: 2;
-            background: rgba(0, 0, 0, 0.45);
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.72rem;
-            font-family: var(--font-cute);
-            font-weight: 700;
-            padding: 0.15rem 0.5rem;
-            border-radius: var(--radius-full);
-            pointer-events: none;
-            backdrop-filter: blur(4px);
         }
 
         .feed-footer {
@@ -1441,6 +1450,11 @@ if ($activeFolderParam !== '' && isset($folderMap[$activeFolderParam])) {
                 </div>
             </div>
         </div>
+
+        <!-- FULLSCREEN BUTTON -->
+        <button type="button" class="nav-fullscreen-btn" id="navFullscreenBtn" title="Mode Layar Penuh (Fullscreen)">
+            <span id="fullscreenIcon">⛶</span>
+        </button>
     </nav>
 
     <!-- Restored position toast -->
@@ -1453,7 +1467,6 @@ if ($activeFolderParam !== '' && isset($folderMap[$activeFolderParam])) {
     <main class="doom-feed" id="doomFeed">
         <?php foreach ($activeFolder['images'] as $i => $img): ?>
             <div class="article-frame" id="art-<?= $i + 1 ?>" data-index="<?= $i + 1 ?>" data-src="<?= htmlspecialchars($img['url']) ?>">
-                <span class="article-num-watermark"><?= $i + 1 ?> / <?= $activeFolder['imageCount'] ?></span>
                 <!-- High-performance Lazy Loaded Image -->
                 <img 
                     class="article-img lazy-img" 
@@ -1662,8 +1675,38 @@ if ($activeFolderParam !== '' && isset($folderMap[$activeFolderParam])) {
                 }
             }, 60);
 
+            // Fullscreen toggle handler
+            const navFullscreenBtn = document.getElementById('navFullscreenBtn');
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {});
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen().catch(err => {});
+                    }
+                }
+            }
+
+            if (navFullscreenBtn) {
+                navFullscreenBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFullscreen();
+                });
+            }
+
+            document.addEventListener('fullscreenchange', () => {
+                const icon = document.getElementById('fullscreenIcon');
+                if (icon) {
+                    icon.textContent = document.fullscreenElement ? '✕' : '⛶';
+                }
+                if (navFullscreenBtn) {
+                    navFullscreenBtn.title = document.fullscreenElement ? 'Keluar Fullscreen (Esc)' : 'Mode Layar Penuh (Fullscreen)';
+                }
+            });
+
             // 3. Save Reading Position on Scroll
             let saveTimeout = null;
+            let navShowTimeout = null;
             let lastScrollY = window.scrollY;
 
             function calculateActiveArticleAndSave() {
@@ -1700,10 +1743,29 @@ if ($activeFolderParam !== '' && isset($folderMap[$activeFolderParam])) {
                     btnScrollTop.classList.remove('visible');
                 }
 
-                if (currentScrollY > 150 && currentScrollY > lastScrollY && !navPickerDropdown.classList.contains('show')) {
+                // Saat scroll turun: langsung sembunyikan 100% (opacity 0)
+                if (currentScrollY > 100 && currentScrollY > lastScrollY && !navPickerDropdown.classList.contains('show')) {
+                    if (navShowTimeout) {
+                        clearTimeout(navShowTimeout);
+                        navShowTimeout = null;
+                    }
                     nav.classList.add('nav-hidden');
-                } else {
-                    nav.classList.remove('nav-hidden');
+                } else if (currentScrollY < lastScrollY && !navPickerDropdown.classList.contains('show')) {
+                    // Saat scroll naik:
+                    if (currentScrollY < 100) {
+                        // Di paling atas layar, munculkan langsung
+                        if (navShowTimeout) {
+                            clearTimeout(navShowTimeout);
+                            navShowTimeout = null;
+                        }
+                        nav.classList.remove('nav-hidden');
+                    } else if (nav.classList.contains('nav-hidden') && !navShowTimeout) {
+                        // Beri jeda 3 detik saat scroll naik sebelum memunculkan navbar kembali
+                        navShowTimeout = setTimeout(() => {
+                            nav.classList.remove('nav-hidden');
+                            navShowTimeout = null;
+                        }, 3000);
+                    }
                 }
 
                 lastScrollY = currentScrollY;
@@ -1711,6 +1773,17 @@ if ($activeFolderParam !== '' && isset($folderMap[$activeFolderParam])) {
                 if (saveTimeout) clearTimeout(saveTimeout);
                 saveTimeout = setTimeout(calculateActiveArticleAndSave, 150);
             }, { passive: true });
+
+            // Munculkan navbar jika kursor digerakkan ke bagian atas layar (< 50px)
+            document.addEventListener('mousemove', (e) => {
+                if (e.clientY < 50) {
+                    if (navShowTimeout) {
+                        clearTimeout(navShowTimeout);
+                        navShowTimeout = null;
+                    }
+                    nav.classList.remove('nav-hidden');
+                }
+            });
 
             window.addEventListener('pagehide', calculateActiveArticleAndSave);
             window.addEventListener('visibilitychange', () => {
