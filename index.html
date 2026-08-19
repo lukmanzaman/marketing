@@ -932,40 +932,6 @@
         .btn-finish-back:hover {
             transform: translateY(-2px);
         }
-
-        .btn-scroll-top {
-            position: fixed;
-            bottom: 24px;
-            right: 20px;
-            z-index: 9999;
-            background: rgba(255, 255, 255, 0.9);
-            color: #1F2937;
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-full);
-            font-size: 1.25rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease, transform 0.2s ease;
-        }
-
-        .btn-scroll-top.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .btn-scroll-top:hover {
-            background: #FF6584;
-            color: #FFFFFF;
-            transform: scale(1.1);
-        }
     </style>
 </head>
 <body class="view-home">
@@ -1629,8 +1595,6 @@
                 <span>Kembali ke Library</span>
             </button>
         </footer>
-
-        <button type="button" class="btn-scroll-top" id="btnScrollTop" title="Kembali ke atas">↑</button>
     </div>
 
     <script>
@@ -1674,7 +1638,6 @@
         const finishSubText = document.getElementById('finishSubText');
         const restoreToast = document.getElementById('restoreToast');
         const restoreToastText = document.getElementById('restoreToastText');
-        const btnScrollTop = document.getElementById('btnScrollTop');
         const navBackBtn = document.getElementById('navBackBtn');
         const finishBackBtn = document.getElementById('finishBackBtn');
 
@@ -2026,7 +1989,6 @@
         // Back button handlers
         navBackBtn.addEventListener('click', () => closeReader(true));
         finishBackBtn.addEventListener('click', () => closeReader(true));
-        btnScrollTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
         // Fullscreen toggle handler
         const navFullscreenBtn = document.getElementById('navFullscreenBtn');
@@ -2073,13 +2035,6 @@
         function handleReaderScroll() {
             if (!currentActiveFolder) return;
             const currentScrollY = window.scrollY;
-
-            if (currentScrollY > 600) {
-                btnScrollTop.classList.add('visible');
-            } else {
-                btnScrollTop.classList.remove('visible');
-            }
-
             const deltaY = lastScrollY - currentScrollY; // > 0 jika scroll ke atas, < 0 jika scroll ke bawah
 
             if (currentScrollY > 100 && deltaY < 0) {
