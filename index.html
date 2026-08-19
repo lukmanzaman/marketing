@@ -35,9 +35,16 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html, body {
+        html {
             width: 100%;
-            height: 100%;
+            min-height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body {
+            width: 100%;
+            min-height: 100%;
             font-family: var(--font-main);
             color: var(--text-body);
             background-color: var(--bg-body);
@@ -697,77 +704,16 @@
             margin: 0;
             padding: 0;
             opacity: 0;
-            transition: opacity 0.28s ease-in-out;
+            transition: opacity 0.15s ease-out;
         }
 
         .article-img.is-loaded {
             opacity: 1;
         }
 
-        .article-frame::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #181B26;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
+        
 
-        .article-frame.loaded::after {
-            opacity: 0;
-            display: none;
-        }
-
-        .feed-footer {
-            background-color: #0F1117;
-            padding: 4rem 1.5rem 6rem;
-            text-align: center;
-            color: #94A3B8;
-        }
-
-        .finish-badge {
-            color: var(--primary);
-            margin-bottom: 0.75rem;
-            display: inline-block;
-        }
-
-        .finish-title {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: #FFFFFF;
-            margin-bottom: 0.4rem;
-        }
-
-        .finish-sub {
-            font-size: 0.9rem;
-            color: #94A3B8;
-            margin-bottom: 1.75rem;
-        }
-
-        .btn-finish-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #FFFFFF;
-            color: #0F172A;
-            border: none;
-            cursor: pointer;
-            font-size: 0.92rem;
-            font-weight: 600;
-            padding: 0.7rem 1.75rem;
-            border-radius: var(--radius-full);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-            transition: transform 0.15s ease;
-        }
-
-        .btn-finish-back:hover {
-            transform: translateY(-2px);
-        }
+        
     </style>
 </head>
 <body class="view-home">
@@ -1389,16 +1335,7 @@
 
         <main class="doom-feed" id="doomFeed"></main>
 
-        <footer class="feed-footer">
-            <div class="finish-badge"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            <h3 class="finish-title">Semua Artikel Selesai Dibaca!</h3>
-            <p class="finish-sub" id="finishSubText">Total artikel visual telah ditampilkan.</p>
-            <button type="button" class="btn-finish-back" id="finishBackBtn">
-                
-                <span>Kembali ke Library</span>
-            </button>
-        </footer>
-    </div>
+        </div>
 
     <script>
         // Data baked dari reindex
@@ -1426,32 +1363,41 @@
             });
         });
 
-        // DOM Elements
+        // Disable browser's auto scroll override for manual SPA control
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // Disable browser's auto scroll override for manual SPA control
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // DOM Elements Cache
         const homeView = document.getElementById('homeView');
         const readerView = document.getElementById('readerView');
         const doomFeed = document.getElementById('doomFeed');
-        const navTitle = document.getElementById('navFolderTitle');
-        const navCounter = document.getElementById('navCounter');
-        const navPickerBtn = document.getElementById('navPickerBtn');
-        const navPickerDropdown = document.getElementById('navPickerDropdown');
-        const navPickerList = document.getElementById('navPickerList');
-        const pickerTotalBadge = document.getElementById('pickerTotalBadge');
-        const navPickerWrapper = document.getElementById('navPickerWrapper');
         const nav = document.getElementById('readerNav');
-        const finishSubText = document.getElementById('finishSubText');
+        const navBackBtn = document.getElementById('navBackBtn');
+        const navTitle = document.getElementById('navFolderTitle');
+        const navPickerBtn = document.getElementById('navPickerBtn');
+        const navCounter = document.getElementById('navCounter');
+        const navPickerDropdown = document.getElementById('navPickerDropdown');
+        const pickerTotalBadge = document.getElementById('pickerTotalBadge');
+        const navPickerList = document.getElementById('navPickerList');
         const restoreToast = document.getElementById('restoreToast');
         const restoreToastText = document.getElementById('restoreToastText');
-        const navBackBtn = document.getElementById('navBackBtn');
-        const finishBackBtn = document.getElementById('finishBackBtn');
 
+        // State variables
         let currentActiveFolder = null;
+        let currentActiveArtIdx = 1;
         let homeScrollY = 0;
         let imageObserver = null;
+        let isScrollTicking = false;
+        let isRestoringScroll = false;
         let saveScrollTimeout = null;
-        let lastScrollY = 0;
-        let currentActiveArtIdx = 1;
 
-        // Controller State & Visibility untuk reader-nav (Default: lenyap, toggle via tap/click)
+        // Visibility Controls (Default: lenyap, toggle via tap/click)
         function showNav() {
             nav.classList.remove('nav-hidden');
         }
@@ -1469,76 +1415,142 @@
             }
         }
 
-        function getStorage(key) {
-            try { return localStorage.getItem(key) || ''; } catch(e) { return ''; }
+        // ================= INDEPENDENT PER-FOLDER DUAL STORAGE (LOCALSTORAGE + COOKIES) =================
+        function setCookie(name, value, days) {
+            try {
+                const d = new Date();
+                d.setTime(d.getTime() + ((days || 365) * 24 * 60 * 60 * 1000));
+                const expires = "expires=" + d.toUTCString();
+                document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/;SameSite=Lax";
+            } catch(e) {}
         }
 
-        function setStorage(key, val) {
-            try { localStorage.setItem(key, val); } catch(e) {}
+        function getCookie(name) {
+            try {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                }
+            } catch(e) {}
+            return null;
         }
 
-        // ================= HOME CARD DROPDOWN TOGGLE =================
-        window.toggleCardDropdown = function(btn) {
-            const card = btn.closest('.folder-card');
-            const menu = btn.nextElementSibling;
-            const isShown = menu.classList.contains('show');
-            
-            // Tutup dropdown lain yang sedang terbuka
-            document.querySelectorAll('.card-dropdown-menu.show').forEach(m => m.classList.remove('show'));
-            document.querySelectorAll('.btn-card-list.active').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.folder-card.active-dropdown').forEach(c => c.classList.remove('active-dropdown'));
+        // Master Position Store: Menyimpan posisi tiap folder secara independen & presisi per pixel
+        let folderPositions = {};
 
-            if (!isShown) {
-                menu.classList.add('show');
-                btn.classList.add('active');
-                if (card) card.classList.add('active-dropdown');
-            }
-        };
+        function loadAllPositions() {
+            let loaded = {};
+            try {
+                const raw = localStorage.getItem('mkt_vault_positions');
+                if (raw) loaded = JSON.parse(raw) || {};
+            } catch(e) {}
 
-        // Tutup dropdown jika klik di luar
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.card-dropdown-wrapper')) {
-                document.querySelectorAll('.card-dropdown-menu.show').forEach(m => m.classList.remove('show'));
-                document.querySelectorAll('.btn-card-list.active').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.folder-card.active-dropdown').forEach(c => c.classList.remove('active-dropdown'));
+            if (Object.keys(loaded).length === 0) {
+                const cookieRaw = getCookie('mkt_vault_positions');
+                if (cookieRaw) {
+                    try { loaded = JSON.parse(cookieRaw) || {}; } catch(e) {}
+                }
             }
-            if (navPickerWrapper && !navPickerWrapper.contains(e.target)) {
-                closePickerDropdown();
-            }
-        });
 
-        // ================= ROUTING & VIEW CONTROLLER =================
+            // Fallback per-folder keys
+            if (typeof libraryData !== 'undefined') {
+                libraryData.forEach(f => {
+                    if (!loaded[f.rawName]) {
+                        try {
+                            const single = localStorage.getItem('mkt_pos_' + f.rawName) || getCookie('mkt_pos_' + f.rawName);
+                            if (single) {
+                                loaded[f.rawName] = JSON.parse(single);
+                            }
+                        } catch(e) {}
+                    }
+                });
+            }
+
+            return loaded;
+        }
+
+        folderPositions = loadAllPositions();
+
+        function saveCurrentPosition(forceSync) {
+            if (!currentActiveFolder || isRestoringScroll) return;
+            const fKey = currentActiveFolder.rawName;
+            const artIdx = currentActiveArtIdx || 1;
+            const scrollY = Math.round(window.scrollY);
+
+            folderPositions[fKey] = {
+                artIdx: artIdx,
+                scrollY: scrollY,
+                total: currentActiveFolder.imageCount,
+                ts: Date.now()
+            };
+
+            const serialized = JSON.stringify(folderPositions);
+            try { localStorage.setItem('mkt_vault_positions', serialized); } catch(e) {}
+            try { localStorage.setItem('mkt_pos_' + fKey, JSON.stringify(folderPositions[fKey])); } catch(e) {}
+            setCookie('mkt_vault_positions', serialized, 365);
+            setCookie('mkt_pos_' + fKey, JSON.stringify(folderPositions[fKey]), 365);
+        }
+
+        // Flush position on window unload/pagehide
+        window.addEventListener('beforeunload', () => saveCurrentPosition(true));
+        window.addEventListener('pagehide', () => saveCurrentPosition(true));
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
         function parseParams() {
-            let hash = window.location.hash.replace(/^#/, '');
-            let search = window.location.search.replace(/^\?/, '');
-            let params = new URLSearchParams(hash || search);
+            const hash = window.location.hash.replace(/^#/, '');
+            const params = new URLSearchParams(hash);
             return {
-                baca: params.get('baca') || '',
-                art: parseInt(params.get('art') || '0', 10)
+                baca: params.get('baca') || null,
+                art: parseInt(params.get('art'), 10) || 0
             };
         }
 
-        window.openReader = function(folderRawName, targetArt = 0, pushState = true) {
-            if (!folderMap[folderRawName]) return;
-            
-            if (pushState) {
-                const targetHash = `baca=${encodeURIComponent(folderRawName)}${targetArt > 0 ? '&art=' + targetArt : ''}`;
-                if (window.location.hash !== '#' + targetHash) {
-                    window.location.hash = targetHash;
+        function setRoute(folderRawName, artIdx) {
+            if (folderRawName) {
+                let newHash = 'baca=' + folderRawName;
+                if (artIdx > 0) newHash += '&art=' + artIdx;
+                if (window.location.hash !== '#' + newHash) {
+                    history.pushState(null, '', '#' + newHash);
+                }
+            } else {
+                if (window.location.hash) {
+                    history.pushState(null, '', window.location.pathname + window.location.search);
                 }
             }
-            
-            renderReader(folderMap[folderRawName], targetArt);
-        };
+        }
 
-        function closeReader(pushState = true) {
-            if (pushState) {
-                history.pushState("", document.title, window.location.pathname + window.location.search);
+        function openReader(rawName, targetArt, updateHash) {
+            if (updateHash === undefined) updateHash = true;
+            const folder = folderMap[rawName];
+            if (!folder) return;
+            renderReader(folder, targetArt || 0);
+            if (updateHash) {
+                setRoute(rawName, targetArt || 0);
+            }
+        }
+
+        function closeReader(updateHash) {
+            if (updateHash === undefined) updateHash = true;
+            if (currentActiveFolder) {
+                saveCurrentPosition(true);
             }
             renderHome();
+            if (updateHash) {
+                setRoute(null);
+            }
         }
 
         function renderHome() {
+            if (currentActiveFolder) {
+                saveCurrentPosition(true);
+            }
             currentActiveFolder = null;
             closePickerDropdown();
             hideNav();
@@ -1556,59 +1568,71 @@
             window.scrollTo({ top: homeScrollY, behavior: 'instant' });
         }
 
-        function renderReader(folder, targetArt = 0) {
-            if (!folder) return;
-            homeScrollY = window.scrollY;
-            currentActiveFolder = folder;
-            currentActiveArtIdx = targetArt > 0 ? targetArt : 1;
+        // ================= SMART PROACTIVE PRELOADER PIPELINE =================
+        const preloadedUrls = new Set();
 
-            document.body.className = 'view-reader';
-            homeView.style.display = 'none';
-            readerView.style.display = 'block';
-            document.title = folder.displayName + ' • Baca Visual Marketing';
+        function preloadImageUrl(url) {
+            if (!url || preloadedUrls.has(url)) return;
+            preloadedUrls.add(url);
+            const temp = new Image();
+            temp.decoding = 'async';
+            temp.src = url;
+        }
 
-            navTitle.textContent = folder.displayName;
-            navCounter.textContent = `Art. ${currentActiveArtIdx} / ${folder.imageCount}`;
-            pickerTotalBadge.textContent = `${folder.imageCount} Item`;
-            finishSubText.textContent = `Total ${folder.imageCount} artikel visual di folder ini telah ditampilkan.`;
+        function loadFrameImage(idx) {
+            if (!currentActiveFolder || !currentActiveFolder.images) return;
+            if (idx < 1 || idx > currentActiveFolder.images.length) return;
 
-            // Default lenyap saat masuk reader
-            hideNav();
+            const frame = document.getElementById('art-' + idx);
+            if (!frame) return;
 
-            // Build Dropdown Article Picker List (max 10 viewed before scroll)
-            let pickerHtml = '';
-            folder.images.forEach((img, i) => {
-                const idx = i + 1;
-                const activeCls = idx === currentActiveArtIdx ? 'active' : '';
-                pickerHtml += `
-                    <div class="nav-picker-item ${activeCls}" data-art="${idx}" onclick="jumpToArticle(${idx})">
-                        <span class="picker-item-num">#${idx}</span>
-                        <span class="picker-item-title" title="${escapeHtml(img.cleanTitle || img.name)}">${escapeHtml(img.cleanTitle || img.name)}</span>
-                    </div>
-                `;
-            });
-            navPickerList.innerHTML = pickerHtml;
+            const img = frame.querySelector('img.article-img');
+            if (!img) return;
 
-            // Build feed items
-            let feedHtml = '';
-            folder.images.forEach((img, i) => {
-                const idx = i + 1;
-                feedHtml += `
-                    <div class="article-frame" id="art-${idx}" data-index="${idx}" data-src="${img.url}">
-                        <img 
-                            class="article-img lazy-img" 
-                            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 3'%3E%3C/svg%3E" 
-                            data-src="${img.url}" 
-                            alt="${img.name}" 
-                            loading="lazy" 
-                            decoding="async"
-                        >
-                    </div>
-                `;
-            });
-            doomFeed.innerHTML = feedHtml;
+            const realSrc = img.getAttribute('data-src');
+            if (!realSrc) return;
 
-            // Setup Lazy Loading Observer
+            if (img.src !== realSrc) {
+                img.src = realSrc;
+            }
+
+            if (img.complete && img.naturalWidth > 0) {
+                img.classList.add('is-loaded');
+                frame.classList.add('loaded');
+            } else {
+                img.onload = () => {
+                    img.classList.add('is-loaded');
+                    frame.classList.add('loaded');
+                };
+            }
+        }
+
+        // Proactive Runway: Selalu memuat 5 gambar ke depan dan 2 di belakang artikel aktif
+        function preloadRunway(currentIdx) {
+            if (!currentActiveFolder || !currentActiveFolder.images) return;
+            const total = currentActiveFolder.images.length;
+            
+            const start = Math.max(1, currentIdx - 2);
+            const end = Math.min(total, currentIdx + 5);
+
+            for (let i = start; i <= end; i++) {
+                loadFrameImage(i);
+                const item = currentActiveFolder.images[i - 1];
+                if (item && item.url) {
+                    preloadImageUrl(item.url);
+                }
+            }
+
+            // Lookahead background network cache (+6 s/d +8)
+            for (let j = end + 1; j <= Math.min(total, end + 3); j++) {
+                const item = currentActiveFolder.images[j - 1];
+                if (item && item.url) {
+                    preloadImageUrl(item.url);
+                }
+            }
+        }
+
+        function setupLazyObserver() {
             const lazyImages = doomFeed.querySelectorAll('.lazy-img');
             if ('IntersectionObserver' in window) {
                 if (imageObserver) imageObserver.disconnect();
@@ -1616,62 +1640,160 @@
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             const img = entry.target;
-                            const frame = img.closest('.article-frame');
-                            const realSrc = img.getAttribute('data-src');
-                            if (realSrc) {
-                                img.src = realSrc;
-                                img.onload = () => {
-                                    img.classList.add('is-loaded');
-                                    if (frame) frame.classList.add('loaded');
-                                };
-                            }
-                            observer.unobserve(img);
+                            const idx = parseInt(img.closest('.article-frame')?.getAttribute('data-index'), 10);
+                            if (idx) preloadRunway(idx);
                         }
                     });
                 }, {
                     root: null,
-                    rootMargin: '800px 0px 800px 0px',
-                    threshold: 0.01
+                    rootMargin: '4000px 0px 4000px 0px',
+                    threshold: 0.001
                 });
                 lazyImages.forEach(img => imageObserver.observe(img));
-            } else {
-                lazyImages.forEach(img => {
-                    img.src = img.getAttribute('data-src');
-                    img.onload = () => {
-                        img.classList.add('is-loaded');
-                        img.closest('.article-frame')?.classList.add('loaded');
-                    };
-                });
+            }
+        }
+
+        // Native BoundingClientRect Tracker untuk deteksi artikel aktif 100% presisi
+        function getCurrentActiveArticleIndex() {
+            const frames = doomFeed.children;
+            if (!frames || frames.length === 0) return 1;
+            const mid = window.innerHeight * 0.4;
+            for (let i = 0; i < frames.length; i++) {
+                const rect = frames[i].getBoundingClientRect();
+                if (rect.top <= mid && rect.bottom > mid) {
+                    return i + 1;
+                }
+            }
+            if (frames[0] && frames[0].offsetHeight > 10) {
+                const h = frames[0].offsetHeight;
+                return Math.max(1, Math.min(frames.length, Math.floor((window.scrollY + mid) / h) + 1));
+            }
+            return 1;
+        }
+
+        function renderReader(folder, targetArt) {
+            if (!folder) return;
+            if (currentActiveFolder && currentActiveFolder !== folder) {
+                saveCurrentPosition(true);
             }
 
-            // Restore position or jump to target article
-            const storageKey = 'mkt_pos_' + folder.rawName;
-            setTimeout(() => {
-                if (targetArt > 0) {
-                    jumpToArticle(targetArt, false);
-                } else {
-                    const savedPosRaw = getStorage(storageKey);
-                    if (savedPosRaw) {
-                        try {
-                            const savedPos = JSON.parse(savedPosRaw);
-                            if (savedPos && (savedPos.scrollY > 80 || savedPos.artIdx > 1)) {
-                                if (savedPos.scrollY) {
-                                    window.scrollTo({ top: savedPos.scrollY, behavior: 'instant' });
-                                } else if (savedPos.artIdx) {
-                                    const targetEl = document.getElementById('art-' + savedPos.artIdx);
-                                    if (targetEl) targetEl.scrollIntoView({ behavior: 'instant' });
-                                }
-                                if (savedPos.artIdx) {
-                                    updateActiveArticleState(savedPos.artIdx);
-                                    restoreToastText.textContent = `Melanjutkan dari Artikel #${savedPos.artIdx} of ${folder.imageCount}`;
-                                    restoreToast.classList.add('show');
-                                    setTimeout(() => restoreToast.classList.remove('show'), 2800);
-                                }
-                            }
-                        } catch(e) {}
+            isRestoringScroll = true;
+            homeScrollY = window.scrollY;
+            currentActiveFolder = folder;
+
+            // Muat data posisi per-folder yang tersimpan di storage
+            folderPositions = loadAllPositions();
+
+            let targetArtIdx = 1;
+            let targetScrollY = 0;
+            let isExactPixelRestore = false;
+
+            if (targetArt && targetArt > 0) {
+                // User meminta lompat ke artikel tertentu (misal dari menu daftar artikel)
+                targetArtIdx = targetArt;
+                isExactPixelRestore = false;
+            } else if (folderPositions[folder.rawName]) {
+                // Membuka kembali folder: gunakan koordinat EXACT PIXEL asli!
+                const pos = folderPositions[folder.rawName];
+                if (pos) {
+                    if (pos.scrollY && pos.scrollY > 0) {
+                        targetScrollY = pos.scrollY;
+                        isExactPixelRestore = true;
+                    }
+                    if (pos.artIdx && pos.artIdx >= 1) {
+                        targetArtIdx = pos.artIdx;
                     }
                 }
-            }, 60);
+            }
+
+            currentActiveArtIdx = targetArtIdx;
+
+            document.body.className = 'view-reader';
+            homeView.style.display = 'none';
+            readerView.style.display = 'block';
+            document.title = folder.displayName + ' • Baca Visual Marketing';
+
+            navTitle.textContent = folder.displayName;
+            navCounter.textContent = 'Art. ' + targetArtIdx + ' / ' + folder.imageCount;
+            pickerTotalBadge.textContent = folder.imageCount + ' Item';
+
+            // Default lenyap saat masuk reader
+            hideNav();
+
+            // Build Dropdown Article Picker List
+            let pickerHtml = '';
+            folder.images.forEach((img, i) => {
+                const idx = i + 1;
+                const activeCls = idx === targetArtIdx ? 'active' : '';
+                pickerHtml += '<div class="nav-picker-item ' + activeCls + '" data-art="' + idx + '" onclick="jumpToArticle(' + idx + ')">';
+                pickerHtml += '<span class="picker-item-num">#' + idx + '</span>';
+                pickerHtml += '<span class="picker-item-title" title="' + escapeHtml(img.cleanTitle || img.name) + '">' + escapeHtml(img.cleanTitle || img.name) + '</span>';
+                pickerHtml += '</div>';
+            });
+            navPickerList.innerHTML = pickerHtml;
+
+            // Build feed items
+            let feedHtml = '';
+            folder.images.forEach((img, i) => {
+                const idx = i + 1;
+                feedHtml += '<div class="article-frame" id="art-' + idx + '" data-index="' + idx + '">';
+                feedHtml += '<img class="article-img lazy-img" src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 3\'%3E%3C/svg%3E" data-src="' + img.url + '" alt="' + escapeHtml(img.name) + '" decoding="async">';
+                feedHtml += '</div>';
+            });
+            doomFeed.innerHTML = feedHtml;
+
+            setupLazyObserver();
+            preloadRunway(targetArtIdx);
+
+            // ================= PEMULIHAN EXACT PIXEL SCROLL =================
+            if (isExactPixelRestore && targetScrollY > 0) {
+                // Restore ke posisi pixel presisi tempat terakhir user membaca!
+                const doPixelRestore = () => {
+                    window.scrollTo({ top: targetScrollY, behavior: 'instant' });
+                    const activeIdx = getCurrentActiveArticleIndex();
+                    updateActiveArticleState(activeIdx);
+                    preloadRunway(activeIdx);
+                    restoreToastText.textContent = 'Melanjutkan posisi membaca (Artikel #' + activeIdx + ' of ' + folder.imageCount + ')';
+                    restoreToast.classList.add('show');
+                    setTimeout(() => restoreToast.classList.remove('show'), 2800);
+                };
+
+                doPixelRestore();
+                requestAnimationFrame(() => {
+                    doPixelRestore();
+                    setTimeout(() => {
+                        doPixelRestore();
+                        isRestoringScroll = false;
+                    }, 100);
+                });
+            } else if (targetArtIdx > 1) {
+                // Lompat ke artikel target (puncak gambar artikel tersebut)
+                const doElementJump = () => {
+                    const targetEl = document.getElementById('art-' + targetArtIdx);
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+                    }
+                    updateActiveArticleState(targetArtIdx);
+                    preloadRunway(targetArtIdx);
+                    restoreToastText.textContent = 'Lompat ke Artikel #' + targetArtIdx + ' of ' + folder.imageCount;
+                    restoreToast.classList.add('show');
+                    setTimeout(() => restoreToast.classList.remove('show'), 2800);
+                };
+
+                doElementJump();
+                requestAnimationFrame(() => {
+                    doElementJump();
+                    setTimeout(() => {
+                        doElementJump();
+                        isRestoringScroll = false;
+                    }, 100);
+                });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                setTimeout(() => {
+                    isRestoringScroll = false;
+                }, 100);
+            }
         }
 
         // Dropdown toggle & Goto helper
@@ -1699,13 +1821,16 @@
             togglePickerDropdown();
         });
 
-        window.jumpToArticle = function(artIdx, smooth = true) {
+        window.jumpToArticle = function(artIdx, smooth) {
+            if (smooth === undefined) smooth = true;
             closePickerDropdown();
+            preloadRunway(artIdx);
             const targetEl = document.getElementById('art-' + artIdx);
             if (targetEl) {
-                targetEl.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant' });
+                targetEl.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant', block: 'start' });
                 updateActiveArticleState(artIdx);
-                restoreToastText.textContent = `Lompat ke Artikel #${artIdx} of ${currentActiveFolder.imageCount}`;
+                saveCurrentPosition(true);
+                restoreToastText.textContent = 'Lompat ke Artikel #' + artIdx + ' of ' + currentActiveFolder.imageCount;
                 restoreToast.classList.add('show');
                 setTimeout(() => restoreToast.classList.remove('show'), 2400);
             }
@@ -1714,7 +1839,7 @@
         function updateActiveArticleState(artIdx) {
             currentActiveArtIdx = artIdx;
             if (currentActiveFolder) {
-                navCounter.textContent = `Art. ${artIdx} / ${currentActiveFolder.imageCount}`;
+                navCounter.textContent = 'Art. ' + artIdx + ' / ' + currentActiveFolder.imageCount;
             }
             const items = navPickerList.querySelectorAll('.nav-picker-item');
             items.forEach(item => {
@@ -1725,7 +1850,6 @@
 
         // Back button handlers
         navBackBtn.addEventListener('click', () => closeReader(true));
-        finishBackBtn.addEventListener('click', () => closeReader(true));
 
         // Fullscreen toggle handler
         const navFullscreenBtn = document.getElementById('navFullscreenBtn');
@@ -1768,39 +1892,41 @@
         window.addEventListener('hashchange', handleRouteChange);
         window.addEventListener('popstate', handleRouteChange);
 
-        // Scroll listener for reader
+        // Scroll listener with real-time RAF tracking & continuous runway preloading
         function handleReaderScroll() {
-            if (!currentActiveFolder) return;
+            if (!currentActiveFolder || isRestoringScroll) return;
 
             // Sembunyikan navbar saat user mulai scroll membaca
             if (!nav.classList.contains('nav-hidden')) {
                 hideNav();
             }
 
+            if (!isScrollTicking) {
+                isScrollTicking = true;
+                requestAnimationFrame(() => {
+                    if (!currentActiveFolder || isRestoringScroll) {
+                        isScrollTicking = false;
+                        return;
+                    }
+
+                    const activeIdx = getCurrentActiveArticleIndex();
+
+                    if (activeIdx !== currentActiveArtIdx) {
+                        updateActiveArticleState(activeIdx);
+                    }
+
+                    // Preload runway selalu 5 gambar ke depan di setiap posisi scroll!
+                    preloadRunway(activeIdx);
+
+                    isScrollTicking = false;
+                });
+            }
+
             if (saveScrollTimeout) clearTimeout(saveScrollTimeout);
             saveScrollTimeout = setTimeout(() => {
-                if (!currentActiveFolder) return;
-                const frames = doomFeed.querySelectorAll('.article-frame');
-                const viewportCenter = window.scrollY + (window.innerHeight / 2);
-                let currentArtIdx = 1;
-
-                frames.forEach(frame => {
-                    const top = frame.offsetTop;
-                    const height = frame.offsetHeight;
-                    if (viewportCenter >= top && viewportCenter < (top + height)) {
-                        currentArtIdx = parseInt(frame.getAttribute('data-index'), 10) || 1;
-                    }
-                });
-
-                updateActiveArticleState(currentArtIdx);
-
-                setStorage('mkt_pos_' + currentActiveFolder.rawName, JSON.stringify({
-                    scrollY: Math.round(window.scrollY),
-                    artIdx: currentArtIdx,
-                    total: currentActiveFolder.imageCount,
-                    ts: Date.now()
-                }));
-            }, 150);
+                if (!currentActiveFolder || isRestoringScroll) return;
+                saveCurrentPosition(false);
+            }, 100);
         }
         window.addEventListener('scroll', handleReaderScroll, { passive: true });
 
@@ -1808,146 +1934,201 @@
         document.addEventListener('click', (e) => {
             if (!currentActiveFolder) return;
 
-            // Jika klik terjadi di dalam navbar / dropdown / restore toast, biarkan event berjalan normal
             if (e.target.closest('#readerNav') || e.target.closest('#restoreToast')) {
                 return;
             }
 
-            // Jika user menekan area atas layar (<= 90px dari atas):
             if (e.clientY <= 90) {
                 toggleNav();
             } else {
-                // Jika menekan bagian lain layar (> 90px): sembunyikan navbar
                 hideNav();
             }
         });
 
         // ================= SEARCH IMPLEMENTATION =================
         const searchInput = document.getElementById('globalSearchInput');
-        const clearBtn = document.getElementById('clearSearchBtn');
-        const dropdown = document.getElementById('searchDropdown');
+        const searchClearBtn = document.getElementById('clearSearchBtn');
+        const searchDropdown = document.getElementById('searchDropdown');
         const resultList = document.getElementById('searchResultList');
-        const matchCountEl = document.getElementById('searchMatchCount');
-        const searchWrapper = document.getElementById('searchWrapper');
+        const resultCount = document.getElementById('searchMatchCount');
 
-        let selectedResultIndex = -1;
+        let searchItems = [];
+        let selectedIndex = -1;
 
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
+        libraryData.forEach(folder => {
+            folder.images.forEach((img, idx) => {
+                searchItems.push({
+                    folderRawName: folder.rawName,
+                    folderDisplayName: folder.displayName,
+                    folderTheme: folder.theme,
+                    folderNumber: folder.number,
+                    articleIndex: idx + 1,
+                    fileName: img.name,
+                    cleanTitle: img.cleanTitle || img.name,
+                    searchKey: (img.name + ' ' + (img.cleanTitle || '') + ' ' + folder.displayName).toLowerCase()
+                });
+            });
+        });
 
-        function escapeRegex(str) {
-            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
-        function highlightMatch(text, query) {
-            if (!query) return escapeHtml(text);
-            const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
-            return escapeHtml(text).replace(regex, '<mark class="match-mark">$1</mark>');
-        }
-
-        function performSearch() {
-            const query = searchInput.value.trim().toLowerCase();
-            clearBtn.style.display = query ? 'block' : 'none';
-
-            if (!query) {
-                dropdown.classList.remove('active');
-                resultList.innerHTML = '';
-                selectedResultIndex = -1;
+        function performSearch(query) {
+            const q = query.trim().toLowerCase();
+            if (!q) {
+                closeSearch();
                 return;
             }
 
-            const matches = searchableArticles.filter(item => {
-                return item.fileName.toLowerCase().includes(query) ||
-                       item.cleanTitle.toLowerCase().includes(query) ||
-                       item.folderName.toLowerCase().includes(query);
+            const terms = q.split(/\s+/).filter(t => t.length > 0);
+            const matches = searchItems.filter(item => {
+                return terms.every(term => item.searchKey.includes(term));
             });
 
-            const topMatches = matches.slice(0, 3);
-            selectedResultIndex = -1;
-
-            if (topMatches.length === 0) {
-                matchCountEl.textContent = '0 cocok';
-                resultList.innerHTML = `<div class="dropdown-empty">Tidak ada artikel yang cocok dengan "<strong>${escapeHtml(query)}</strong>" 🌸</div>`;
-            } else {
-                matchCountEl.textContent = `${matches.length} ditemukan (menampilkan ${topMatches.length})`;
-                resultList.innerHTML = topMatches.map((item, i) => `
-                    <div class="search-result-item" data-index="${i}" onclick="selectSearchResult('${encodeURIComponent(item.folderRaw)}', ${item.articleIndex})">
-                        <div class="result-folder-icon">${item.folderIcon}</div>
-                        <div class="result-text-block">
-                            <div class="result-title-line">
-                                <span class="result-path-folder">${highlightMatch(item.folderName, query)}</span>
-                                <span style="color: #A0AEC0; margin: 0 0.25rem;">/</span>
-                                <span>${highlightMatch(item.fileName, query)}</span>
-                            </div>
-                            <div class="result-path-line">
-                                <span>📄 Artikel #${item.articleIndex}</span>
-                            </div>
-                        </div>
-                        <span class="result-arrow">→</span>
-                    </div>
-                `).join('');
-            }
-
-            dropdown.classList.add('active');
+            renderSearchResults(matches, terms, q);
         }
 
-        window.selectSearchResult = function(folderRawEscaped, artIdx) {
-            const folderRaw = decodeURIComponent(folderRawEscaped);
-            dropdown.classList.remove('active');
-            openReader(folderRaw, artIdx, true);
-        };
+        function renderSearchResults(results, terms, rawQuery) {
+            selectedIndex = -1;
+            if (results.length === 0) {
+                if (resultCount) resultCount.textContent = '0 Hasil';
+                resultList.innerHTML = '<div class="dropdown-empty">Tidak ada artikel yang cocok dengan "<strong>' + escapeHtml(rawQuery) + '</strong>"</div>';
+                searchDropdown.classList.add('active');
+                return;
+            }
 
-        searchInput.addEventListener('input', performSearch);
-        searchInput.addEventListener('focus', () => {
-            if (searchInput.value.trim()) dropdown.classList.add('active');
+            const maxResults = 15;
+            const shownResults = results.slice(0, maxResults);
+            if (resultCount) resultCount.textContent = results.length + ' Hasil' + (results.length > maxResults ? ' (Top 15)' : '');
+
+            let html = '';
+            shownResults.forEach((res, idx) => {
+                let displayTitle = escapeHtml(res.cleanTitle);
+                terms.forEach(term => {
+                    if (!term) return;
+                    const regex = new RegExp('(' + escapeRegExp(term) + ')', 'gi');
+                    displayTitle = displayTitle.replace(regex, '<span class="match-mark">$1</span>');
+                });
+
+                html += '<div class="search-result-item" data-index="' + idx + '" data-folder="' + res.folderRawName + '" data-art="' + res.articleIndex + '">';
+                html += '<span class="result-folder-icon">';
+                html += '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>';
+                html += '</span>';
+                html += '<div class="result-text-block">';
+                html += '<div class="result-title-line">' + displayTitle + '</div>';
+                html += '<div class="result-path-line">';
+                html += '<span class="result-path-folder">' + escapeHtml(res.folderDisplayName) + '</span> • Artikel #' + res.articleIndex;
+                html += '</div>';
+                html += '</div>';
+                html += '<span class="result-arrow">›</span>';
+                html += '</div>';
+            });
+
+            resultList.innerHTML = html;
+            searchDropdown.classList.add('active');
+
+            const items = resultList.querySelectorAll('.search-result-item');
+            items.forEach(el => {
+                el.addEventListener('click', () => {
+                    const fName = el.getAttribute('data-folder');
+                    const aIdx = parseInt(el.getAttribute('data-art'), 10);
+                    closeSearch();
+                    openReader(fName, aIdx);
+                });
+            });
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function closeSearch() {
+            searchDropdown.classList.remove('active');
+            resultList.innerHTML = '';
+            selectedIndex = -1;
+        }
+
+        searchInput.addEventListener('input', () => {
+            const val = searchInput.value;
+            if (searchClearBtn) searchClearBtn.style.display = val ? 'flex' : 'none';
+            performSearch(val);
         });
 
-        clearBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            dropdown.classList.remove('active');
-            clearBtn.style.display = 'none';
-            searchInput.focus();
-        });
+        if (searchClearBtn) {
+            searchClearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                searchClearBtn.style.display = 'none';
+                closeSearch();
+                searchInput.focus();
+            });
+        }
 
         searchInput.addEventListener('keydown', (e) => {
-            const items = dropdown.querySelectorAll('.search-result-item');
-            if (e.key === 'Escape') {
-                dropdown.classList.remove('active');
-            } else if (e.key === 'ArrowDown') {
-                if (items.length > 0) {
-                    e.preventDefault();
-                    selectedResultIndex = (selectedResultIndex + 1) % items.length;
-                    updateSelectedDropdownItem(items);
-                }
+            if (!searchDropdown.classList.contains('active')) return;
+            const items = resultList.querySelectorAll('.search-result-item');
+            if (!items.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateSelection(items);
             } else if (e.key === 'ArrowUp') {
-                if (items.length > 0) {
-                    e.preventDefault();
-                    selectedResultIndex = (selectedResultIndex - 1 + items.length) % items.length;
-                    updateSelectedDropdownItem(items);
-                }
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateSelection(items);
             } else if (e.key === 'Enter') {
-                if (selectedResultIndex >= 0 && items[selectedResultIndex]) {
-                    e.preventDefault();
-                    items[selectedResultIndex].click();
+                e.preventDefault();
+                if (selectedIndex >= 0 && selectedIndex < items.length) {
+                    items[selectedIndex].click();
                 } else if (items.length > 0) {
-                    e.preventDefault();
                     items[0].click();
                 }
+            } else if (e.key === 'Escape') {
+                closeSearch();
             }
         });
 
-        function updateSelectedDropdownItem(items) {
-            items.forEach((item, idx) => {
-                item.classList.toggle('selected', idx === selectedResultIndex);
+        function updateSelection(items) {
+            items.forEach((item, i) => {
+                if (i === selectedIndex) {
+                    item.classList.add('selected');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('selected');
+                }
             });
         }
 
-        // Init route on page load
-        handleRouteChange();
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#searchWrapper')) {
+                closeSearch();
+            }
+            if (!e.target.closest('.card-dropdown-wrapper')) {
+                document.querySelectorAll('.card-dropdown-menu.show').forEach(m => m.classList.remove('show'));
+                document.querySelectorAll('.btn-card-list.active').forEach(b => b.classList.remove('active'));
+            }
+        });
+
+        window.toggleCardDropdown = function(btn) {
+            const wrapper = btn.closest('.card-dropdown-wrapper');
+            const menu = wrapper.querySelector('.card-dropdown-menu');
+            const wasOpen = menu.classList.contains('show');
+
+            document.querySelectorAll('.card-dropdown-menu.show').forEach(m => m.classList.remove('show'));
+            document.querySelectorAll('.btn-card-list.active').forEach(b => b.classList.remove('active'));
+
+            if (!wasOpen) {
+                menu.classList.add('show');
+                btn.classList.add('active');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const { baca, art } = parseParams();
+            if (baca && folderMap[baca]) {
+                openReader(baca, art, false);
+            } else {
+                renderHome();
+            }
+        });
+
     </script>
 </body>
-</html>
 </html>
