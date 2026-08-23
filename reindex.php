@@ -88,6 +88,10 @@ foreach ($finalFolderList as $folder) {
             if (in_array($ext, ['jpg', 'jpeg', 'png'], true)) {
                 $fileSize = @filesize($filePath) ?: 0;
                 $cleanTitle = pathinfo($file, PATHINFO_FILENAME);
+                // Bersihkan suffix .md jika ada
+                if (substr($cleanTitle, -3) === '.md') {
+                    $cleanTitle = substr($cleanTitle, 0, -3);
+                }
                 $cleanTitle = ucwords(trim(str_replace(['-', '_'], ' ', $cleanTitle)));
 
                 $images[] = [
@@ -141,7 +145,7 @@ $outputData = [
 $jsonEncoded = json_encode($outputData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 file_put_contents($jsonFile, $jsonEncoded);
 
-// 2. Fungsi memanggang baked index.html mandiri (bisa dibuka lokal tanpa web server PHP)
+// 2. Fungsi memanggang baked index.html mandiri
 function generateBakedHtml($outputData) {
     $folders = $outputData['folders'];
     $foldersJson = json_encode($folders, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -157,9 +161,6 @@ function generateBakedHtml($outputData) {
         foreach ($folders as $idx => $folder) {
             $rawNameAttr = htmlspecialchars($folder['rawName']);
             $accent = htmlspecialchars($folder['theme']['accent']);
-            $bg = htmlspecialchars($folder['theme']['bg']);
-            $border = htmlspecialchars($folder['theme']['border']);
-            $icon = $folder['theme']['icon'];
             $numberBadge = !empty($folder['number']) ? '<span class="number-badge">#' . htmlspecialchars($folder['number']) . '</span>' : '';
             $displayName = htmlspecialchars($folder['displayName']);
             $count = (int)$folder['imageCount'];
@@ -180,9 +181,7 @@ function generateBakedHtml($outputData) {
             >
                 <div class="card-click-area" onclick="openReader(\'' . addslashes($folder['rawName']) . '\');">
                     <div class="card-top">
-                        <div class="folder-icon-box" style="background-color: ' . $bg . '; border: 1.5px solid ' . $border . ';">
-                            ' . $icon . '
-                        </div>
+                        <div class="folder-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div>
                         <div class="folder-info">
                             ' . $numberBadge . '
                             <h2 class="folder-title">' . $displayName . '</h2>
@@ -194,7 +193,7 @@ function generateBakedHtml($outputData) {
                     <!-- Dropdown List di Home Card -->
                     <div class="card-dropdown-wrapper">
                         <button type="button" class="btn-card-list" onclick="event.stopPropagation(); toggleCardDropdown(this);">
-                            <span>📑 Daftar Artikel (' . $count . ')</span>
+                            <span>Daftar Artikel (' . $count . ')</span>
                             <span class="picker-arrow">▾</span>
                         </button>
                         <div class="card-dropdown-menu">
@@ -209,171 +208,225 @@ function generateBakedHtml($outputData) {
                     </div>
 
                     <button type="button" class="btn-read" onclick="openReader(\'' . addslashes($folder['rawName']) . '\');">
-                        <span>📖 Baca</span>
+                        <span>Buka</span>
                     </button>
                 </div>
             </div>';
         }
     }
 
-    $template = <<<'HTML'
+    $template = <<<'HTML_TPL'
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>🎀 Marketing Visual Library</title>
+    <title>VIS Marketing • Vertical Infographic Stream</title>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="VIS Marketing • Vertical Infographic Stream">
+    <meta name="description" content="Eksplorasi visual 1.000+ konsep marketing, psikologi bias kognitif, framework strategi, dan metrik bisnis dalam format continuous vertical stream 4K. The Productive Doomscroll.">
+    <meta name="keywords" content="marketing, visual marketing, infografis marketing, framework bisnis, bias kognitif, copywriting, metrik bisnis, productive doomscroll, VIS engine">
+    <meta name="author" content="Lukman Zaman">
+    <meta name="theme-color" content="#0F1117">
+
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lukmanzaman.github.io/marketing/">
+    <meta property="og:title" content="VIS Marketing • Vertical Infographic Stream">
+    <meta property="og:description" content="Eksplorasi visual 1.000+ konsep marketing, psikologi bias kognitif, framework strategi, dan metrik bisnis dalam format continuous vertical stream 4K. The Productive Doomscroll.">
+    <meta property="og:image" content="https://lukmanzaman.github.io/marketing/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="VIS Marketing - Vertical Infographic Stream">
+    <meta property="og:site_name" content="VIS Marketing">
+    <meta property="og:locale" content="id_ID">
+
+    <!-- Twitter Card / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://lukmanzaman.github.io/marketing/">
+    <meta name="twitter:title" content="VIS Marketing • Vertical Infographic Stream">
+    <meta name="twitter:description" content="Eksplorasi visual 1.000+ konsep marketing, psikologi bias kognitif, framework strategi, dan metrik bisnis dalam format continuous vertical stream 4K. The Productive Doomscroll.">
+    <meta name="twitter:image" content="https://lukmanzaman.github.io/marketing/og-image.jpg">
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+
         :root {
-            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-cute: 'Quicksand', sans-serif;
-            --bg-body: #FFFDF9;
+            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --bg-body: #F8F9FA;
             --card-bg: #FFFFFF;
-            --text-title: #2B2D42;
-            --text-body: #4A5568;
-            --text-muted: #718096;
-            --border-soft: #F1E5D8;
-            --shadow-card: 0 4px 14px rgba(180, 140, 120, 0.06);
-            --shadow-hover: 0 12px 24px -4px rgba(255, 101, 132, 0.15), 0 4px 10px rgba(180, 140, 120, 0.06);
-            --radius-sm: 10px;
-            --radius-md: 16px;
-            --radius-lg: 20px;
+            --card-border: #E5E7EB;
+            --text-title: #0F172A;
+            --text-body: #334155;
+            --text-muted: #64748B;
+            --border-soft: #E2E8F0;
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 12px 28px rgba(15, 23, 42, 0.08), 0 4px 10px rgba(0, 0, 0, 0.03);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
             --radius-full: 9999px;
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        html, body {
+        html {
+            width: 100%;
+            min-height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body {
             width: 100%;
             min-height: 100%;
             font-family: var(--font-main);
             color: var(--text-body);
+            background-color: var(--bg-body);
+            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            transition: background-color 0.25s ease;
         }
 
         body.view-home {
             background-color: var(--bg-body);
-            background-image: 
-                radial-gradient(circle at 10% 15%, #FFEBF0 0%, transparent 35%),
-                radial-gradient(circle at 90% 20%, #EBF4FF 0%, transparent 40%),
-                radial-gradient(circle at 50% 90%, #F5ECFF 0%, transparent 45%);
-            background-attachment: fixed;
-            line-height: 1.5;
         }
 
         body.view-reader {
-            background-color: #000000 !important;
-            background-image: none !important;
-            color: #FFFFFF;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* DECORATIONS */
-        .decor-item {
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.5;
-            user-select: none;
-            animation: floatMove 12s ease-in-out infinite alternate;
-        }
-        @keyframes floatMove {
-            0% { transform: translateY(0) rotate(0deg) scale(1); }
-            50% { transform: translateY(-16px) rotate(8deg) scale(1.04); }
-            100% { transform: translateY(10px) rotate(-6deg) scale(0.96); }
+            background-color: #0F1117;
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1180px;
             margin: 0 auto;
-            padding: 2.5rem 1.25rem 4rem;
-            position: relative;
-            z-index: 1;
+            padding: 3.5rem 1.5rem 5rem;
         }
 
-        /* HERO & SEARCH */
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.85rem;
+            background: #EEF2F6;
+            border: 1px solid #E2E8F0;
+            border-radius: var(--radius-full);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .hero-badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
         .hero {
             text-align: center;
-            margin-bottom: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin-bottom: 2.75rem;
         }
 
         .hero-title {
-            font-family: var(--font-cute);
-            font-size: clamp(1.8rem, 3.8vw, 2.5rem);
+            font-size: clamp(2rem, 5vw, 3rem);
             font-weight: 800;
             color: var(--text-title);
-            letter-spacing: -0.02em;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            line-height: 1.2;
-            margin-bottom: 1.25rem;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
         }
 
+        .hero-desc {
+            font-size: 0.98rem;
+            color: var(--text-muted);
+            max-width: 540px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* SEARCH BAR */
         .search-wrapper {
             position: relative;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
+            max-width: 640px;
+            margin: 0 auto 3rem;
+            z-index: 100;
         }
 
         .search-input-box {
             position: relative;
             display: flex;
             align-items: center;
+            background: #FFFFFF;
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius-full);
+            padding: 0.45rem 0.65rem 0.45rem 1.25rem;
+            box-shadow: var(--shadow-card);
+            transition: all 0.2s ease;
+        }
+
+        .search-input-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 8px 20px rgba(0, 0, 0, 0.06);
         }
 
         .search-icon-left {
-            position: absolute;
-            left: 1.1rem;
-            font-size: 1.05rem;
-            pointer-events: none;
-            color: #A0AEC0;
+            color: var(--text-muted);
+            margin-right: 0.75rem;
+            display: flex;
+            align-items: center;
         }
 
         .search-input {
-            width: 100%;
-            padding: 0.72rem 2.5rem 0.72rem 2.85rem;
-            background: #FFFFFF;
-            border: 1.5px solid #EAD8C7;
-            border-radius: var(--radius-full);
-            font-family: var(--font-main);
-            font-size: 0.92rem;
-            color: var(--text-title);
+            flex: 1;
+            border: none;
             outline: none;
-            box-shadow: 0 4px 14px rgba(180, 140, 120, 0.08);
-            transition: all 0.22s ease;
+            background: transparent;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-title);
         }
 
-        .search-input:focus {
-            border-color: #FF8FAB;
-            box-shadow: 0 6px 18px rgba(255, 143, 171, 0.22);
-            background: #FFFFFF;
+        .search-input::placeholder {
+            color: #94A3B8;
         }
 
         .search-clear-btn {
-            position: absolute;
-            right: 1rem;
-            background: none;
+            background: #F1F5F9;
             border: none;
-            color: #A0AEC0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 0.95rem;
             display: none;
-            padding: 0.2rem;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
         }
 
         .search-clear-btn:hover {
+            background: #E2E8F0;
             color: var(--text-title);
         }
 
@@ -383,19 +436,12 @@ function generateBakedHtml($outputData) {
             left: 0;
             right: 0;
             background: #FFFFFF;
-            border: 1.5px solid #F1E5D8;
+            border: 1px solid var(--border-soft);
             border-radius: var(--radius-md);
-            box-shadow: 0 16px 36px rgba(180, 140, 120, 0.18);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            z-index: 100;
             display: none;
-            text-align: left;
-            animation: fadeInDown 0.18s ease-out;
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
+            z-index: 1000;
         }
 
         .search-dropdown.active {
@@ -403,41 +449,36 @@ function generateBakedHtml($outputData) {
         }
 
         .dropdown-header {
-            padding: 0.5rem 0.9rem;
-            background: #FDF9F5;
-            border-bottom: 1px solid #F1E5D8;
-            font-size: 0.75rem;
+            padding: 0.65rem 1rem;
+            background: #F8FAFC;
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 0.72rem;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
-            font-family: var(--font-cute);
             display: flex;
-            align-items: center;
             justify-content: space-between;
         }
 
         .search-result-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
             padding: 0.75rem 1rem;
-            text-decoration: none;
-            color: var(--text-title);
-            border-bottom: 1px solid #F8EFE6;
-            transition: background 0.15s ease;
+            border-bottom: 1px solid #F1F5F9;
             cursor: pointer;
-        }
-
-        .search-result-item:last-child {
-            border-bottom: none;
+            transition: background 0.15s ease;
         }
 
         .search-result-item:hover, .search-result-item.selected {
-            background: #FFF5F8;
+            background: #F8FAFC;
         }
 
         .result-folder-icon {
-            font-size: 1.3rem;
-            flex-shrink: 0;
+            color: var(--primary);
+            margin-right: 0.85rem;
+            display: flex;
+            align-items: center;
         }
 
         .result-text-block {
@@ -447,76 +488,68 @@ function generateBakedHtml($outputData) {
 
         .result-title-line {
             font-size: 0.88rem;
-            font-weight: 700;
-            color: #2B2D42;
-            font-family: var(--font-cute);
+            font-weight: 600;
+            color: var(--text-title);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        .result-path-line {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 0.1rem;
         }
 
         .result-path-folder {
-            color: #FF5A87;
-            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .result-path-line {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
         }
 
         .result-arrow {
-            font-size: 0.85rem;
-            color: #FF8FAB;
-            flex-shrink: 0;
-            font-weight: 800;
+            color: #CBD5E1;
+            font-size: 1.1rem;
+            margin-left: 0.5rem;
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+
+        .search-result-item:hover .result-arrow {
+            color: var(--primary);
+            transform: translateX(3px);
         }
 
         .match-mark {
-            background-color: #FED7E2;
-            color: #DB2777;
-            padding: 0.05rem 0.2rem;
+            background: #DBEAFE;
+            color: #1D4ED8;
+            padding: 0.1rem 0.25rem;
             border-radius: 4px;
-            font-weight: 800;
+            font-weight: 600;
         }
 
         .dropdown-empty {
-            padding: 1.25rem 1rem;
+            padding: 1.75rem;
             text-align: center;
-            color: var(--text-muted);
             font-size: 0.85rem;
+            color: var(--text-muted);
         }
 
         /* GRID & FOLDER CARDS */
         .folders-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-            gap: 1.25rem;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 1.35rem;
         }
 
         .folder-card {
             background: var(--card-bg);
             border-radius: var(--radius-lg);
-            border: 1.5px solid var(--border-soft);
+            border: 1px solid var(--card-border);
             box-shadow: var(--shadow-card);
-            padding: 1.25rem;
+            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: 1rem;
-            position: relative;
-            z-index: 1;
-            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease, border-color 0.22s ease;
-            color: inherit;
-        }
-
-        .folder-card.active-dropdown,
-        .folder-card:has(.card-dropdown-menu.show) {
-            z-index: 999;
+            overflow: visible;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .folder-card::before {
@@ -525,48 +558,48 @@ function generateBakedHtml($outputData) {
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: var(--theme-accent, #FF6584);
-            opacity: 0.85;
+            height: 3px;
+            background: var(--theme-accent, var(--primary));
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            transition: height 0.2s ease;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
         }
 
         .folder-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
+            border-color: #CBD5E1;
             box-shadow: var(--shadow-hover);
-            border-color: #F8B4C4;
-        }
-
-        .folder-card:hover::before {
-            height: 6px;
         }
 
         .card-click-area {
+            padding: 1.35rem 1.35rem 0.85rem;
             cursor: pointer;
         }
 
         .card-top {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.85rem;
+            margin-bottom: 0.75rem;
         }
 
         .folder-icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
+            background: #F8FAFC;
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius-md);
+            color: var(--theme-accent, var(--primary));
             flex-shrink: 0;
-            transition: transform 0.25s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease;
         }
 
         .folder-card:hover .folder-icon-box {
-            transform: scale(1.1) rotate(5deg);
+            transform: scale(1.05);
+            background: #FFFFFF;
         }
 
         .folder-info {
@@ -575,90 +608,69 @@ function generateBakedHtml($outputData) {
         }
 
         .number-badge {
-            font-family: var(--font-cute);
-            font-size: 0.72rem;
-            font-weight: 800;
-            padding: 0.12rem 0.5rem;
-            border-radius: var(--radius-full);
-            background: #F3E8FF;
-            color: #7C3AED;
             display: inline-block;
-            margin-bottom: 0.2rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: #F1F5F9;
+            padding: 0.1rem 0.45rem;
+            border-radius: 4px;
+            margin-bottom: 0.35rem;
+            letter-spacing: 0.04em;
         }
 
         .folder-title {
-            font-family: var(--font-cute);
-            font-size: 1.12rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--text-title);
-            line-height: 1.25;
-            word-break: break-word;
+            line-height: 1.35;
         }
 
         .card-bottom-row {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding-top: 0.75rem;
-            border-top: 1px dashed #F1E5D8;
+            justify-content: space-between;
+            padding: 0 1.35rem 1.25rem;
             position: relative;
         }
 
-        /* CARD DROPDOWN LIST (HOME VIEW) */
         .card-dropdown-wrapper {
             position: relative;
-            flex: 1;
         }
 
         .btn-card-list {
-            width: 100%;
-            background: #FDF4F6;
-            color: #BE123C;
-            border: 1.2px solid #FECDD3;
-            font-family: var(--font-cute);
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 0.45rem 0.75rem;
-            border-radius: var(--radius-full);
             display: inline-flex;
             align-items: center;
-            justify-content: space-between;
             gap: 0.35rem;
+            background: #F8FAFC;
+            border: 1px solid var(--border-soft);
+            color: var(--text-body);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.42rem 0.8rem;
+            border-radius: var(--radius-full);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
         .btn-card-list:hover, .btn-card-list.active {
-            background: #FFE4EC;
-            border-color: #FF5A87;
-            color: #9F1239;
-            box-shadow: 0 2px 8px rgba(255, 90, 135, 0.2);
-        }
-
-        .btn-card-list .picker-arrow {
-            font-size: 0.65rem;
-            transition: transform 0.2s ease;
-        }
-
-        .btn-card-list.active .picker-arrow {
-            transform: rotate(180deg);
+            background: #FFFFFF;
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .card-dropdown-menu {
             position: absolute;
-            top: calc(100% + 6px);
+            bottom: calc(100% + 8px);
             left: 0;
-            right: 0;
-            width: 100%;
-            min-width: 270px;
+            width: 280px;
             background: #FFFFFF;
-            border: 1.5px solid #F1E5D8;
+            border: 1px solid var(--border-soft);
             border-radius: var(--radius-md);
-            box-shadow: 0 14px 36px rgba(180, 140, 120, 0.22);
-            z-index: 100;
-            display: none;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
             overflow: hidden;
-            animation: fadeInDown 0.18s ease-out;
+            display: none;
+            z-index: 1000;
         }
 
         .card-dropdown-menu.show {
@@ -666,22 +678,19 @@ function generateBakedHtml($outputData) {
         }
 
         .card-dropdown-header {
-            padding: 0.5rem 0.8rem;
-            background: #FDF9F5;
-            border-bottom: 1px solid #F1E5D8;
+            padding: 0.6rem 0.95rem;
+            background: #F8FAFC;
+            border-bottom: 1px solid var(--border-soft);
             font-size: 0.72rem;
             font-weight: 700;
-            color: var(--text-muted);
-            font-family: var(--font-cute);
+            color: var(--text-title);
             display: flex;
-            align-items: center;
             justify-content: space-between;
         }
 
         .card-dropdown-list {
-            max-height: 175px; /* Maksimal 5 item terlihat sebelum scroll */
+            max-height: 180px;
             overflow-y: auto;
-            overscroll-behavior: contain;
             padding: 0.25rem 0;
         }
 
@@ -689,87 +698,52 @@ function generateBakedHtml($outputData) {
             width: 5px;
         }
         .card-dropdown-list::-webkit-scrollbar-thumb {
-            background: #FFB3C6;
+            background: #CBD5E1;
             border-radius: 4px;
         }
 
         .card-dropdown-item {
+            padding: 0.48rem 0.95rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.45rem 0.8rem;
-            color: var(--text-title);
+            color: var(--text-body);
             font-size: 0.8rem;
             cursor: pointer;
-            transition: background 0.15s ease, color 0.15s ease;
-            border-bottom: 1px solid #FAF0E6;
-        }
-
-        .card-dropdown-item:last-child {
-            border-bottom: none;
+            transition: background 0.15s ease;
         }
 
         .card-dropdown-item:hover {
-            background: #FFF0F5;
-            color: #FF4D6D;
+            background: #F1F5F9;
+            color: var(--primary);
         }
 
         .btn-read {
-            background: linear-gradient(135deg, #FF758C 0%, #FF5A87 100%);
-            color: #FFFFFF;
-            border: none;
-            padding: 0.45rem 0.95rem;
-            border-radius: var(--radius-full);
-            font-family: var(--font-cute);
-            font-size: 0.82rem;
-            font-weight: 700;
-            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            box-shadow: 0 3px 10px rgba(255, 90, 135, 0.22);
-            transition: all 0.2s ease;
-            text-decoration: none;
-            flex-shrink: 0;
+            background: var(--primary);
+            color: #FFFFFF;
+            border: none;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.45rem 1.05rem;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+            transition: all 0.15s ease;
         }
 
         .btn-read:hover {
-            background: linear-gradient(135deg, #FF5A87 0%, #E64372 100%);
+            background: var(--primary-hover);
             transform: translateY(-1px);
-            box-shadow: 0 5px 14px rgba(255, 90, 135, 0.32);
-        }
-
-        .empty-box {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 3.5rem 1.5rem;
-            background: #FFFFFF;
-            border-radius: var(--radius-lg);
-            border: 2px dashed #EBDCCF;
-        }
-
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 0.6rem;
-        }
-
-        .empty-title {
-            font-family: var(--font-cute);
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-title);
         }
 
         .footer-bar {
             text-align: center;
-            margin-top: 3.5rem;
+            padding: 3.5rem 0 1rem;
             font-size: 0.82rem;
             color: var(--text-muted);
-        }
-
-        @media (max-width: 640px) {
-            .container { padding: 1.75rem 1rem 3rem; }
-            .folders-grid { grid-template-columns: 1fr; }
         }
 
         /* ========================================================
@@ -784,13 +758,13 @@ function generateBakedHtml($outputData) {
             display: flex;
             align-items: center;
             gap: 0.55rem;
-            background: rgba(18, 18, 20, 0.88);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 0.4rem 0.85rem;
+            background: rgba(15, 17, 23, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 0.35rem 0.85rem;
             border-radius: var(--radius-full);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             max-width: 95vw;
             opacity: 1;
             visibility: visible;
@@ -804,120 +778,69 @@ function generateBakedHtml($outputData) {
             transform: translateX(-50%) translateY(-24px) !important;
         }
 
-        .reader-nav:hover, .reader-nav:focus-within {
-            opacity: 1 !important;
-            visibility: visible !important;
-            pointer-events: auto !important;
-            transform: translateX(-50%) translateY(0) !important;
-        }
+        
 
-        .nav-fullscreen-btn {
-            background: rgba(255, 255, 255, 0.15);
+        .nav-fullscreen-btn, .nav-back-btn {
+            background: rgba(255, 255, 255, 0.08);
             color: #FFFFFF;
-            border: none;
-            font-size: 0.92rem;
-            padding: 0.28rem 0.55rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
             border-radius: var(--radius-full);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            transition: background 0.2s ease, transform 0.15s ease;
-        }
-
-        .nav-fullscreen-btn:hover {
-            background: #FF6584;
-            transform: scale(1.08);
-        }
-
-        .nav-back-btn {
-            background: rgba(255, 255, 255, 0.15);
-            color: #FFFFFF;
-            border: none;
-            font-family: var(--font-cute);
-            font-size: 0.85rem;
-            font-weight: 700;
-            padding: 0.3rem 0.75rem;
-            border-radius: var(--radius-full);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            cursor: pointer;
-            transition: background 0.2s ease, transform 0.15s ease;
-        }
-
-        .nav-back-btn:hover {
-            background: #FF6584;
-            transform: scale(1.04);
-        }
-
-        .nav-title-text {
-            font-family: var(--font-cute);
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #F3F4F6;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 160px;
-        }
-
-        /* DROPDOWN ARTICLE SELECTOR / GOTO LIST IN READER */
-        .nav-picker-wrapper {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .nav-picker-btn {
-            background: rgba(255, 101, 132, 0.22);
-            color: #FF8FAB;
-            border: 1px solid rgba(255, 101, 132, 0.4);
-            font-family: var(--font-cute);
-            font-size: 0.78rem;
-            font-weight: 800;
-            padding: 0.25rem 0.65rem;
-            border-radius: var(--radius-full);
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .nav-fullscreen-btn:hover, .nav-back-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .nav-title-text {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            max-width: 220px;
             white-space: nowrap;
-            transition: all 0.2s ease;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-picker-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: all 0.15s ease;
         }
 
         .nav-picker-btn:hover, .nav-picker-btn.active {
-            background: #FF5A87;
-            color: #FFFFFF;
-            border-color: #FF5A87;
-            box-shadow: 0 0 12px rgba(255, 90, 135, 0.5);
-        }
-
-        .nav-picker-btn .picker-arrow {
-            font-size: 0.68rem;
-            transition: transform 0.2s ease;
-        }
-
-        .nav-picker-btn.active .picker-arrow {
-            transform: rotate(180deg);
+            background: #FFFFFF;
+            color: #0F172A;
         }
 
         .nav-picker-dropdown {
             position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            width: 300px;
-            max-width: 88vw;
-            background: rgba(18, 18, 22, 0.96);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1.5px solid rgba(255, 101, 132, 0.35);
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 290px;
+            background: #1E222D;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: var(--radius-md);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 24px rgba(255, 90, 135, 0.18);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
             overflow: hidden;
-            z-index: 10001;
             display: none;
-            animation: fadeInDown 0.18s ease-out;
         }
 
         .nav-picker-dropdown.show {
@@ -926,84 +849,70 @@ function generateBakedHtml($outputData) {
 
         .nav-picker-header {
             padding: 0.55rem 0.85rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             font-size: 0.72rem;
             font-weight: 700;
-            color: #9CA3AF;
-            font-family: var(--font-cute);
+            color: #94A3B8;
             display: flex;
-            align-items: center;
             justify-content: space-between;
         }
 
         .picker-total-badge {
-            background: rgba(255, 101, 132, 0.25);
-            color: #FF8FAB;
+            background: rgba(255, 255, 255, 0.15);
+            color: #FFFFFF;
             padding: 0.1rem 0.45rem;
             border-radius: var(--radius-full);
             font-size: 0.68rem;
         }
 
         .nav-picker-list {
-            max-height: 175px; /* Maksimal 5 item terlihat sebelum scroll */
+            max-height: 180px;
             overflow-y: auto;
-            overscroll-behavior: contain;
             padding: 0.3rem 0;
         }
 
         .nav-picker-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        .nav-picker-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
+            width: 5px;
         }
         .nav-picker-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 101, 132, 0.4);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
-        }
-        .nav-picker-list::-webkit-scrollbar-thumb:hover {
-            background: #FF5A87;
         }
 
         .nav-picker-item {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.55rem;
             padding: 0.48rem 0.85rem;
-            color: #E5E7EB;
-            font-size: 0.8rem;
-            text-decoration: none;
+            color: #CBD5E1;
+            font-size: 0.78rem;
             cursor: pointer;
-            transition: background 0.15s ease, color 0.15s ease;
-            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
         }
 
         .nav-picker-item:hover {
-            background: rgba(255, 101, 132, 0.15);
+            background: rgba(255, 255, 255, 0.08);
             color: #FFFFFF;
         }
 
         .nav-picker-item.active {
-            background: rgba(255, 90, 135, 0.22);
-            color: #FF8FAB;
-            border-left-color: #FF5A87;
+            background: var(--primary);
+            color: #FFFFFF;
             font-weight: 700;
         }
 
         .picker-item-num {
-            font-family: var(--font-cute);
-            font-weight: 800;
-            font-size: 0.72rem;
-            color: #FF8FAB;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94A3B8;
             background: rgba(255, 255, 255, 0.08);
-            padding: 0.1rem 0.4rem;
-            border-radius: 6px;
-            flex-shrink: 0;
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
         }
 
         .nav-picker-item.active .picker-item-num {
-            background: #FF5A87;
+            background: rgba(255, 255, 255, 0.25);
             color: #FFFFFF;
         }
 
@@ -1013,8 +922,6 @@ function generateBakedHtml($outputData) {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-family: var(--font-main);
-            line-height: 1.3;
         }
 
         .restore-toast {
@@ -1022,23 +929,18 @@ function generateBakedHtml($outputData) {
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(30px);
-            background: rgba(30, 30, 36, 0.92);
+            background: #0F172A;
             color: #FFFFFF;
-            border: 1px solid #FF6584;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 0.55rem 1.25rem;
             border-radius: var(--radius-full);
-            font-family: var(--font-cute);
             font-size: 0.85rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            box-shadow: 0 8px 24px rgba(255, 101, 132, 0.25);
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
             z-index: 10000;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .restore-toast.show {
@@ -1054,7 +956,7 @@ function generateBakedHtml($outputData) {
             display: flex;
             flex-direction: column;
             align-items: stretch;
-            background-color: #000000;
+            background-color: #0F1117;
         }
 
         .article-frame {
@@ -1062,8 +964,8 @@ function generateBakedHtml($outputData) {
             display: block;
             margin: 0;
             padding: 0;
-            border-bottom: 1px solid #000000;
-            background-color: #080808;
+            border-bottom: 1px solid #0F1117;
+            background-color: #151821;
             position: relative;
             line-height: 0;
             aspect-ratio: 1 / 3;
@@ -1078,113 +980,16 @@ function generateBakedHtml($outputData) {
             margin: 0;
             padding: 0;
             opacity: 0;
-            transition: opacity 0.28s ease-in-out;
+            transition: opacity 0.15s ease-out;
         }
 
         .article-img.is-loaded {
             opacity: 1;
         }
 
-        .article-frame::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #111114 0%, #1a1a1f 50%, #111114 100%);
-            z-index: 1;
-            pointer-events: none;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
+        
 
-        .article-frame.loaded::after {
-            opacity: 0;
-            display: none;
-        }
-
-        .feed-footer {
-            background-color: #0d0d11;
-            padding: 4rem 1.5rem 6rem;
-            text-align: center;
-            color: #9CA3AF;
-        }
-
-        .finish-badge {
-            font-size: 2.2rem;
-            margin-bottom: 0.75rem;
-            display: inline-block;
-        }
-
-        .finish-title {
-            font-family: var(--font-cute);
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #FFFFFF;
-            margin-bottom: 0.4rem;
-        }
-
-        .finish-sub {
-            font-size: 0.9rem;
-            color: #8E8EA0;
-            margin-bottom: 1.75rem;
-        }
-
-        .btn-finish-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, #FF758C 0%, #FF5A87 100%);
-            color: #FFFFFF;
-            border: none;
-            cursor: pointer;
-            font-family: var(--font-cute);
-            font-size: 0.95rem;
-            font-weight: 700;
-            padding: 0.75rem 1.75rem;
-            border-radius: var(--radius-full);
-            box-shadow: 0 6px 18px rgba(255, 90, 135, 0.35);
-            transition: transform 0.2s ease;
-        }
-
-        .btn-finish-back:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-scroll-top {
-            position: fixed;
-            bottom: 24px;
-            right: 20px;
-            z-index: 9999;
-            background: rgba(255, 255, 255, 0.9);
-            color: #1F2937;
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-full);
-            font-size: 1.25rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease, transform 0.2s ease;
-        }
-
-        .btn-scroll-top.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .btn-scroll-top:hover {
-            background: #FF6584;
-            color: #FFFFFF;
-            transform: scale(1.1);
-        }
+        
     </style>
 </head>
 <body class="view-home">
@@ -1193,19 +998,19 @@ function generateBakedHtml($outputData) {
          HOME VIEW: LIBRARY GRID & LIVE SEARCH
          ========================================== -->
     <div id="homeView">
-        <div class="decor-item" style="top: 8%; left: 4%; font-size: 2.2rem;">🌸</div>
-        <div class="decor-item" style="top: 18%; right: 5%; font-size: 2rem; animation-delay: -2s;">✨</div>
-        <div class="decor-item" style="bottom: 12%; left: 5%; font-size: 2rem; animation-delay: -5s;">🧁</div>
-        <div class="decor-item" style="bottom: 22%; right: 6%; font-size: 2.2rem; animation-delay: -8s;">🎨</div>
-
         <div class="container">
             <header class="hero">
-                <h1 class="hero-title">🎀 Marketing Visual Library</h1>
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    <span>VIS ENGINE • VERTICAL INFOGRAPHIC STREAM</span>
+                </div>
+                <h1 class="hero-title">VIS Marketing</h1>
+                <p class="hero-desc">###TOTAL_FOLDERS### Kategori • ###TOTAL_ARTICLES### Konsep Visual 4K • The Productive Doomscroll</p>
 
                 <!-- REAL-TIME SEARCH -->
                 <div class="search-wrapper" id="searchWrapper">
                     <div class="search-input-box">
-                        <span class="search-icon-left">🔍</span>
+                        <span class="search-icon-left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
                         <input 
                             type="text" 
                             id="globalSearchInput" 
@@ -1229,11 +1034,11 @@ function generateBakedHtml($outputData) {
             </header>
 
             <main class="folders-grid" id="foldersGrid">
-                ###CARDS_HTML###
+###CARDS_HTML###
             </main>
 
             <footer class="footer-bar">
-                <p>Marketing Visual Vault 🌸 • Baked Standalone HTML • Total ###TOTAL_ARTICLES### Artikel (###TOTAL_FOLDERS### Folder)</p>
+                <p>Marketing Visual Vault • Baked Standalone HTML • Total ###TOTAL_ARTICLES### Artikel (###TOTAL_FOLDERS### Folder)</p>
                 <p style="font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.7;">Diperbarui: ###GENERATED_AT###</p>
             </footer>
         </div>
@@ -1279,28 +1084,23 @@ function generateBakedHtml($outputData) {
 
         <main class="doom-feed" id="doomFeed"></main>
 
-        <footer class="feed-footer">
-            <div class="finish-badge">🎉✨</div>
-            <h3 class="finish-title">Semua Artikel Selesai Dibaca!</h3>
-            <p class="finish-sub" id="finishSubText">Total artikel visual telah ditampilkan.</p>
-            <button type="button" class="btn-finish-back" id="finishBackBtn">
-                <span>🌸</span>
-                <span>Kembali ke Library</span>
-            </button>
-        </footer>
-
-        <button type="button" class="btn-scroll-top" id="btnScrollTop" title="Kembali ke atas">↑</button>
-    </div>
+        </div>
 
     <script>
         // Data baked dari reindex
         const libraryData = ###FOLDERS_JSON###;
+        // Base URL absolut untuk gambar (GitHub Pages)
+        const IMAGE_BASE_URL = 'https://lukmanzaman.github.io/marketing/';
+
         const folderMap = {};
         const searchableArticles = [];
 
         libraryData.forEach(folder => {
             folderMap[folder.rawName] = folder;
             folder.images.forEach((img, idx) => {
+                if (img.url && !img.url.startsWith('http://') && !img.url.startsWith('https://')) {
+                    img.url = IMAGE_BASE_URL + img.url.replace(/^\/+/, '');
+                }
                 searchableArticles.push({
                     folderRaw: folder.rawName,
                     folderName: folder.displayName,
@@ -1312,108 +1112,202 @@ function generateBakedHtml($outputData) {
             });
         });
 
-        // DOM Elements
+        // Disable browser's auto scroll override for manual SPA control
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // Disable browser's auto scroll override for manual SPA control
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // DOM Elements Cache
         const homeView = document.getElementById('homeView');
         const readerView = document.getElementById('readerView');
         const doomFeed = document.getElementById('doomFeed');
-        const navTitle = document.getElementById('navFolderTitle');
-        const navCounter = document.getElementById('navCounter');
-        const navPickerBtn = document.getElementById('navPickerBtn');
-        const navPickerDropdown = document.getElementById('navPickerDropdown');
-        const navPickerList = document.getElementById('navPickerList');
-        const pickerTotalBadge = document.getElementById('pickerTotalBadge');
-        const navPickerWrapper = document.getElementById('navPickerWrapper');
         const nav = document.getElementById('readerNav');
-        const finishSubText = document.getElementById('finishSubText');
+        const navBackBtn = document.getElementById('navBackBtn');
+        const navTitle = document.getElementById('navFolderTitle');
+        const navPickerBtn = document.getElementById('navPickerBtn');
+        const navCounter = document.getElementById('navCounter');
+        const navPickerDropdown = document.getElementById('navPickerDropdown');
+        const pickerTotalBadge = document.getElementById('pickerTotalBadge');
+        const navPickerList = document.getElementById('navPickerList');
         const restoreToast = document.getElementById('restoreToast');
         const restoreToastText = document.getElementById('restoreToastText');
-        const btnScrollTop = document.getElementById('btnScrollTop');
-        const navBackBtn = document.getElementById('navBackBtn');
-        const finishBackBtn = document.getElementById('finishBackBtn');
 
+        // State variables
         let currentActiveFolder = null;
+        let currentActiveArtIdx = 1;
         let homeScrollY = 0;
         let imageObserver = null;
+        let isScrollTicking = false;
+        let isRestoringScroll = false;
         let saveScrollTimeout = null;
-        let lastScrollY = 0;
-        let currentActiveArtIdx = 1;
 
-        function getStorage(key) {
-            try { return localStorage.getItem(key) || ''; } catch(e) { return ''; }
+        // Visibility Controls (Default: lenyap, toggle via tap/click)
+        function showNav() {
+            nav.classList.remove('nav-hidden');
         }
 
-        function setStorage(key, val) {
-            try { localStorage.setItem(key, val); } catch(e) {}
+        function hideNav() {
+            closePickerDropdown();
+            nav.classList.add('nav-hidden');
         }
 
-        // ================= HOME CARD DROPDOWN TOGGLE =================
-        window.toggleCardDropdown = function(btn) {
-            const card = btn.closest('.folder-card');
-            const menu = btn.nextElementSibling;
-            const isShown = menu.classList.contains('show');
-            
-            // Tutup dropdown lain yang sedang terbuka
-            document.querySelectorAll('.card-dropdown-menu.show').forEach(m => m.classList.remove('show'));
-            document.querySelectorAll('.btn-card-list.active').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.folder-card.active-dropdown').forEach(c => c.classList.remove('active-dropdown'));
-
-            if (!isShown) {
-                menu.classList.add('show');
-                btn.classList.add('active');
-                if (card) card.classList.add('active-dropdown');
+        function toggleNav() {
+            if (nav.classList.contains('nav-hidden')) {
+                showNav();
+            } else {
+                hideNav();
             }
-        };
+        }
 
-        // Tutup dropdown jika klik di luar
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.card-dropdown-wrapper')) {
-                document.querySelectorAll('.card-dropdown-menu.show').forEach(m => m.classList.remove('show'));
-                document.querySelectorAll('.btn-card-list.active').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.folder-card.active-dropdown').forEach(c => c.classList.remove('active-dropdown'));
-            }
-            if (navPickerWrapper && !navPickerWrapper.contains(e.target)) {
-                closePickerDropdown();
-            }
-        });
+        // ================= INDEPENDENT PER-FOLDER DUAL STORAGE (LOCALSTORAGE + COOKIES) =================
+        function setCookie(name, value, days) {
+            try {
+                const d = new Date();
+                d.setTime(d.getTime() + ((days || 365) * 24 * 60 * 60 * 1000));
+                const expires = "expires=" + d.toUTCString();
+                document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/;SameSite=Lax";
+            } catch(e) {}
+        }
 
-        // ================= ROUTING & VIEW CONTROLLER =================
+        function getCookie(name) {
+            try {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                }
+            } catch(e) {}
+            return null;
+        }
+
+        // Master Position Store: Menyimpan posisi tiap folder secara independen & presisi per pixel
+        let folderPositions = {};
+
+        function loadAllPositions() {
+            let loaded = {};
+            try {
+                const raw = localStorage.getItem('mkt_vault_positions');
+                if (raw) loaded = JSON.parse(raw) || {};
+            } catch(e) {}
+
+            if (Object.keys(loaded).length === 0) {
+                const cookieRaw = getCookie('mkt_vault_positions');
+                if (cookieRaw) {
+                    try { loaded = JSON.parse(cookieRaw) || {}; } catch(e) {}
+                }
+            }
+
+            // Fallback per-folder keys
+            if (typeof libraryData !== 'undefined') {
+                libraryData.forEach(f => {
+                    if (!loaded[f.rawName]) {
+                        try {
+                            const single = localStorage.getItem('mkt_pos_' + f.rawName) || getCookie('mkt_pos_' + f.rawName);
+                            if (single) {
+                                loaded[f.rawName] = JSON.parse(single);
+                            }
+                        } catch(e) {}
+                    }
+                });
+            }
+
+            return loaded;
+        }
+
+        folderPositions = loadAllPositions();
+
+        function saveCurrentPosition(forceSync) {
+            if (!currentActiveFolder || isRestoringScroll) return;
+            const fKey = currentActiveFolder.rawName;
+            const artIdx = currentActiveArtIdx || 1;
+            const scrollY = Math.round(window.scrollY);
+
+            folderPositions[fKey] = {
+                artIdx: artIdx,
+                scrollY: scrollY,
+                total: currentActiveFolder.imageCount,
+                ts: Date.now()
+            };
+
+            const serialized = JSON.stringify(folderPositions);
+            try { localStorage.setItem('mkt_vault_positions', serialized); } catch(e) {}
+            try { localStorage.setItem('mkt_pos_' + fKey, JSON.stringify(folderPositions[fKey])); } catch(e) {}
+            setCookie('mkt_vault_positions', serialized, 365);
+            setCookie('mkt_pos_' + fKey, JSON.stringify(folderPositions[fKey]), 365);
+        }
+
+        // Flush position on window unload/pagehide
+        window.addEventListener('beforeunload', () => saveCurrentPosition(true));
+        window.addEventListener('pagehide', () => saveCurrentPosition(true));
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
         function parseParams() {
-            let hash = window.location.hash.replace(/^#/, '');
-            let search = window.location.search.replace(/^\?/, '');
-            let params = new URLSearchParams(hash || search);
+            const hash = window.location.hash.replace(/^#/, '');
+            const params = new URLSearchParams(hash);
             return {
-                baca: params.get('baca') || '',
-                art: parseInt(params.get('art') || '0', 10)
+                baca: params.get('baca') || null,
+                art: parseInt(params.get('art'), 10) || 0
             };
         }
 
-        window.openReader = function(folderRawName, targetArt = 0, pushState = true) {
-            if (!folderMap[folderRawName]) return;
-            
-            if (pushState) {
-                const targetHash = `baca=${encodeURIComponent(folderRawName)}${targetArt > 0 ? '&art=' + targetArt : ''}`;
-                if (window.location.hash !== '#' + targetHash) {
-                    window.location.hash = targetHash;
+        function setRoute(folderRawName, artIdx) {
+            if (folderRawName) {
+                let newHash = 'baca=' + folderRawName;
+                if (artIdx > 0) newHash += '&art=' + artIdx;
+                if (window.location.hash !== '#' + newHash) {
+                    history.pushState(null, '', '#' + newHash);
+                }
+            } else {
+                if (window.location.hash) {
+                    history.pushState(null, '', window.location.pathname + window.location.search);
                 }
             }
-            
-            renderReader(folderMap[folderRawName], targetArt);
-        };
+        }
 
-        function closeReader(pushState = true) {
-            if (pushState) {
-                history.pushState("", document.title, window.location.pathname + window.location.search);
+        function openReader(rawName, targetArt, updateHash) {
+            if (updateHash === undefined) updateHash = true;
+            const folder = folderMap[rawName];
+            if (!folder) return;
+            renderReader(folder, targetArt || 0);
+            if (updateHash) {
+                setRoute(rawName, targetArt || 0);
+            }
+        }
+
+        function closeReader(updateHash) {
+            if (updateHash === undefined) updateHash = true;
+            if (currentActiveFolder) {
+                saveCurrentPosition(true);
             }
             renderHome();
+            if (updateHash) {
+                setRoute(null);
+            }
         }
 
         function renderHome() {
+            if (currentActiveFolder) {
+                saveCurrentPosition(true);
+            }
             currentActiveFolder = null;
             closePickerDropdown();
+            hideNav();
+
             document.body.className = 'view-home';
             readerView.style.display = 'none';
             homeView.style.display = 'block';
-            document.title = '🎀 Marketing Visual Library';
+            document.title = 'VIS Marketing • Vertical Infographic Stream';
 
             if (imageObserver) {
                 imageObserver.disconnect();
@@ -1423,56 +1317,71 @@ function generateBakedHtml($outputData) {
             window.scrollTo({ top: homeScrollY, behavior: 'instant' });
         }
 
-        function renderReader(folder, targetArt = 0) {
-            if (!folder) return;
-            homeScrollY = window.scrollY;
-            currentActiveFolder = folder;
-            currentActiveArtIdx = targetArt > 0 ? targetArt : 1;
+        // ================= SMART PROACTIVE PRELOADER PIPELINE =================
+        const preloadedUrls = new Set();
 
-            document.body.className = 'view-reader';
-            homeView.style.display = 'none';
-            readerView.style.display = 'block';
-            document.title = folder.displayName + ' • Baca Visual Marketing';
+        function preloadImageUrl(url) {
+            if (!url || preloadedUrls.has(url)) return;
+            preloadedUrls.add(url);
+            const temp = new Image();
+            temp.decoding = 'async';
+            temp.src = url;
+        }
 
-            navTitle.textContent = folder.displayName;
-            navCounter.textContent = `Art. ${currentActiveArtIdx} / ${folder.imageCount}`;
-            pickerTotalBadge.textContent = `${folder.imageCount} Item`;
-            finishSubText.textContent = `Total ${folder.imageCount} artikel visual di folder ini telah ditampilkan.`;
+        function loadFrameImage(idx) {
+            if (!currentActiveFolder || !currentActiveFolder.images) return;
+            if (idx < 1 || idx > currentActiveFolder.images.length) return;
 
-            // Build Dropdown Article Picker List (max 10 viewed before scroll)
-            let pickerHtml = '';
-            folder.images.forEach((img, i) => {
-                const idx = i + 1;
-                const activeCls = idx === currentActiveArtIdx ? 'active' : '';
-                pickerHtml += `
-                    <div class="nav-picker-item ${activeCls}" data-art="${idx}" onclick="jumpToArticle(${idx})">
-                        <span class="picker-item-num">#${idx}</span>
-                        <span class="picker-item-title" title="${escapeHtml(img.cleanTitle || img.name)}">${escapeHtml(img.cleanTitle || img.name)}</span>
-                    </div>
-                `;
-            });
-            navPickerList.innerHTML = pickerHtml;
+            const frame = document.getElementById('art-' + idx);
+            if (!frame) return;
 
-            // Build feed items
-            let feedHtml = '';
-            folder.images.forEach((img, i) => {
-                const idx = i + 1;
-                feedHtml += `
-                    <div class="article-frame" id="art-${idx}" data-index="${idx}" data-src="${img.url}">
-                        <img 
-                            class="article-img lazy-img" 
-                            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 3'%3E%3C/svg%3E" 
-                            data-src="${img.url}" 
-                            alt="${img.name}" 
-                            loading="lazy" 
-                            decoding="async"
-                        >
-                    </div>
-                `;
-            });
-            doomFeed.innerHTML = feedHtml;
+            const img = frame.querySelector('img.article-img');
+            if (!img) return;
 
-            // Setup Lazy Loading Observer
+            const realSrc = img.getAttribute('data-src');
+            if (!realSrc) return;
+
+            if (img.src !== realSrc) {
+                img.src = realSrc;
+            }
+
+            if (img.complete && img.naturalWidth > 0) {
+                img.classList.add('is-loaded');
+                frame.classList.add('loaded');
+            } else {
+                img.onload = () => {
+                    img.classList.add('is-loaded');
+                    frame.classList.add('loaded');
+                };
+            }
+        }
+
+        // Proactive Runway: Selalu memuat 5 gambar ke depan dan 2 di belakang artikel aktif
+        function preloadRunway(currentIdx) {
+            if (!currentActiveFolder || !currentActiveFolder.images) return;
+            const total = currentActiveFolder.images.length;
+            
+            const start = Math.max(1, currentIdx - 2);
+            const end = Math.min(total, currentIdx + 5);
+
+            for (let i = start; i <= end; i++) {
+                loadFrameImage(i);
+                const item = currentActiveFolder.images[i - 1];
+                if (item && item.url) {
+                    preloadImageUrl(item.url);
+                }
+            }
+
+            // Lookahead background network cache (+6 s/d +8)
+            for (let j = end + 1; j <= Math.min(total, end + 3); j++) {
+                const item = currentActiveFolder.images[j - 1];
+                if (item && item.url) {
+                    preloadImageUrl(item.url);
+                }
+            }
+        }
+
+        function setupLazyObserver() {
             const lazyImages = doomFeed.querySelectorAll('.lazy-img');
             if ('IntersectionObserver' in window) {
                 if (imageObserver) imageObserver.disconnect();
@@ -1480,62 +1389,160 @@ function generateBakedHtml($outputData) {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             const img = entry.target;
-                            const frame = img.closest('.article-frame');
-                            const realSrc = img.getAttribute('data-src');
-                            if (realSrc) {
-                                img.src = realSrc;
-                                img.onload = () => {
-                                    img.classList.add('is-loaded');
-                                    if (frame) frame.classList.add('loaded');
-                                };
-                            }
-                            observer.unobserve(img);
+                            const idx = parseInt(img.closest('.article-frame')?.getAttribute('data-index'), 10);
+                            if (idx) preloadRunway(idx);
                         }
                     });
                 }, {
                     root: null,
-                    rootMargin: '800px 0px 800px 0px',
-                    threshold: 0.01
+                    rootMargin: '4000px 0px 4000px 0px',
+                    threshold: 0.001
                 });
                 lazyImages.forEach(img => imageObserver.observe(img));
-            } else {
-                lazyImages.forEach(img => {
-                    img.src = img.getAttribute('data-src');
-                    img.onload = () => {
-                        img.classList.add('is-loaded');
-                        img.closest('.article-frame')?.classList.add('loaded');
-                    };
-                });
+            }
+        }
+
+        // Native BoundingClientRect Tracker untuk deteksi artikel aktif 100% presisi
+        function getCurrentActiveArticleIndex() {
+            const frames = doomFeed.children;
+            if (!frames || frames.length === 0) return 1;
+            const mid = window.innerHeight * 0.4;
+            for (let i = 0; i < frames.length; i++) {
+                const rect = frames[i].getBoundingClientRect();
+                if (rect.top <= mid && rect.bottom > mid) {
+                    return i + 1;
+                }
+            }
+            if (frames[0] && frames[0].offsetHeight > 10) {
+                const h = frames[0].offsetHeight;
+                return Math.max(1, Math.min(frames.length, Math.floor((window.scrollY + mid) / h) + 1));
+            }
+            return 1;
+        }
+
+        function renderReader(folder, targetArt) {
+            if (!folder) return;
+            if (currentActiveFolder && currentActiveFolder !== folder) {
+                saveCurrentPosition(true);
             }
 
-            // Restore position or jump to target article
-            const storageKey = 'mkt_pos_' + folder.rawName;
-            setTimeout(() => {
-                if (targetArt > 0) {
-                    jumpToArticle(targetArt, false);
-                } else {
-                    const savedPosRaw = getStorage(storageKey);
-                    if (savedPosRaw) {
-                        try {
-                            const savedPos = JSON.parse(savedPosRaw);
-                            if (savedPos && (savedPos.scrollY > 80 || savedPos.artIdx > 1)) {
-                                if (savedPos.scrollY) {
-                                    window.scrollTo({ top: savedPos.scrollY, behavior: 'instant' });
-                                } else if (savedPos.artIdx) {
-                                    const targetEl = document.getElementById('art-' + savedPos.artIdx);
-                                    if (targetEl) targetEl.scrollIntoView({ behavior: 'instant' });
-                                }
-                                if (savedPos.artIdx) {
-                                    updateActiveArticleState(savedPos.artIdx);
-                                    restoreToastText.textContent = `Melanjutkan dari Artikel #${savedPos.artIdx} of ${folder.imageCount}`;
-                                    restoreToast.classList.add('show');
-                                    setTimeout(() => restoreToast.classList.remove('show'), 2800);
-                                }
-                            }
-                        } catch(e) {}
+            isRestoringScroll = true;
+            homeScrollY = window.scrollY;
+            currentActiveFolder = folder;
+
+            // Muat data posisi per-folder yang tersimpan di storage
+            folderPositions = loadAllPositions();
+
+            let targetArtIdx = 1;
+            let targetScrollY = 0;
+            let isExactPixelRestore = false;
+
+            if (targetArt && targetArt > 0) {
+                // User meminta lompat ke artikel tertentu (misal dari menu daftar artikel)
+                targetArtIdx = targetArt;
+                isExactPixelRestore = false;
+            } else if (folderPositions[folder.rawName]) {
+                // Membuka kembali folder: gunakan koordinat EXACT PIXEL asli!
+                const pos = folderPositions[folder.rawName];
+                if (pos) {
+                    if (pos.scrollY && pos.scrollY > 0) {
+                        targetScrollY = pos.scrollY;
+                        isExactPixelRestore = true;
+                    }
+                    if (pos.artIdx && pos.artIdx >= 1) {
+                        targetArtIdx = pos.artIdx;
                     }
                 }
-            }, 60);
+            }
+
+            currentActiveArtIdx = targetArtIdx;
+
+            document.body.className = 'view-reader';
+            homeView.style.display = 'none';
+            readerView.style.display = 'block';
+            document.title = folder.displayName + ' • Baca Visual Marketing';
+
+            navTitle.textContent = folder.displayName;
+            navCounter.textContent = 'Art. ' + targetArtIdx + ' / ' + folder.imageCount;
+            pickerTotalBadge.textContent = folder.imageCount + ' Item';
+
+            // Default lenyap saat masuk reader
+            hideNav();
+
+            // Build Dropdown Article Picker List
+            let pickerHtml = '';
+            folder.images.forEach((img, i) => {
+                const idx = i + 1;
+                const activeCls = idx === targetArtIdx ? 'active' : '';
+                pickerHtml += '<div class="nav-picker-item ' + activeCls + '" data-art="' + idx + '" onclick="jumpToArticle(' + idx + ')">';
+                pickerHtml += '<span class="picker-item-num">#' + idx + '</span>';
+                pickerHtml += '<span class="picker-item-title" title="' + escapeHtml(img.cleanTitle || img.name) + '">' + escapeHtml(img.cleanTitle || img.name) + '</span>';
+                pickerHtml += '</div>';
+            });
+            navPickerList.innerHTML = pickerHtml;
+
+            // Build feed items
+            let feedHtml = '';
+            folder.images.forEach((img, i) => {
+                const idx = i + 1;
+                feedHtml += '<div class="article-frame" id="art-' + idx + '" data-index="' + idx + '">';
+                feedHtml += '<img class="article-img lazy-img" src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1 3\'%3E%3C/svg%3E" data-src="' + img.url + '" alt="' + escapeHtml(img.name) + '" decoding="async">';
+                feedHtml += '</div>';
+            });
+            doomFeed.innerHTML = feedHtml;
+
+            setupLazyObserver();
+            preloadRunway(targetArtIdx);
+
+            // ================= PEMULIHAN EXACT PIXEL SCROLL =================
+            if (isExactPixelRestore && targetScrollY > 0) {
+                // Restore ke posisi pixel presisi tempat terakhir user membaca!
+                const doPixelRestore = () => {
+                    window.scrollTo({ top: targetScrollY, behavior: 'instant' });
+                    const activeIdx = getCurrentActiveArticleIndex();
+                    updateActiveArticleState(activeIdx);
+                    preloadRunway(activeIdx);
+                    restoreToastText.textContent = 'Melanjutkan posisi membaca (Artikel #' + activeIdx + ' of ' + folder.imageCount + ')';
+                    restoreToast.classList.add('show');
+                    setTimeout(() => restoreToast.classList.remove('show'), 2800);
+                };
+
+                doPixelRestore();
+                requestAnimationFrame(() => {
+                    doPixelRestore();
+                    setTimeout(() => {
+                        doPixelRestore();
+                        isRestoringScroll = false;
+                    }, 100);
+                });
+            } else if (targetArtIdx > 1) {
+                // Lompat ke artikel target (puncak gambar artikel tersebut)
+                const doElementJump = () => {
+                    const targetEl = document.getElementById('art-' + targetArtIdx);
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+                    }
+                    updateActiveArticleState(targetArtIdx);
+                    preloadRunway(targetArtIdx);
+                    restoreToastText.textContent = 'Lompat ke Artikel #' + targetArtIdx + ' of ' + folder.imageCount;
+                    restoreToast.classList.add('show');
+                    setTimeout(() => restoreToast.classList.remove('show'), 2800);
+                };
+
+                doElementJump();
+                requestAnimationFrame(() => {
+                    doElementJump();
+                    setTimeout(() => {
+                        doElementJump();
+                        isRestoringScroll = false;
+                    }, 100);
+                });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                setTimeout(() => {
+                    isRestoringScroll = false;
+                }, 100);
+            }
         }
 
         // Dropdown toggle & Goto helper
@@ -1563,13 +1570,16 @@ function generateBakedHtml($outputData) {
             togglePickerDropdown();
         });
 
-        window.jumpToArticle = function(artIdx, smooth = true) {
+        window.jumpToArticle = function(artIdx, smooth) {
+            if (smooth === undefined) smooth = true;
             closePickerDropdown();
+            preloadRunway(artIdx);
             const targetEl = document.getElementById('art-' + artIdx);
             if (targetEl) {
-                targetEl.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant' });
+                targetEl.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant', block: 'start' });
                 updateActiveArticleState(artIdx);
-                restoreToastText.textContent = `Lompat ke Artikel #${artIdx} of ${currentActiveFolder.imageCount}`;
+                saveCurrentPosition(true);
+                restoreToastText.textContent = 'Lompat ke Artikel #' + artIdx + ' of ' + currentActiveFolder.imageCount;
                 restoreToast.classList.add('show');
                 setTimeout(() => restoreToast.classList.remove('show'), 2400);
             }
@@ -1578,7 +1588,7 @@ function generateBakedHtml($outputData) {
         function updateActiveArticleState(artIdx) {
             currentActiveArtIdx = artIdx;
             if (currentActiveFolder) {
-                navCounter.textContent = `Art. ${artIdx} / ${currentActiveFolder.imageCount}`;
+                navCounter.textContent = 'Art. ' + artIdx + ' / ' + currentActiveFolder.imageCount;
             }
             const items = navPickerList.querySelectorAll('.nav-picker-item');
             items.forEach(item => {
@@ -1589,8 +1599,6 @@ function generateBakedHtml($outputData) {
 
         // Back button handlers
         navBackBtn.addEventListener('click', () => closeReader(true));
-        finishBackBtn.addEventListener('click', () => closeReader(true));
-        btnScrollTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
         // Fullscreen toggle handler
         const navFullscreenBtn = document.getElementById('navFullscreenBtn');
@@ -1633,211 +1641,247 @@ function generateBakedHtml($outputData) {
         window.addEventListener('hashchange', handleRouteChange);
         window.addEventListener('popstate', handleRouteChange);
 
-        // Scroll listener for reader
-        let navShowTimeout = null;
+        // Scroll listener with real-time RAF tracking & continuous runway preloading
         function handleReaderScroll() {
-            if (!currentActiveFolder) return;
-            const currentScrollY = window.scrollY;
+            if (!currentActiveFolder || isRestoringScroll) return;
 
-            if (currentScrollY > 600) {
-                btnScrollTop.classList.add('visible');
-            } else {
-                btnScrollTop.classList.remove('visible');
+            // Sembunyikan navbar saat user mulai scroll membaca
+            if (!nav.classList.contains('nav-hidden')) {
+                hideNav();
             }
 
-            // Saat scroll turun: sembunyikan total 0%
-            if (currentScrollY > 100 && currentScrollY > lastScrollY && !navPickerDropdown.classList.contains('show')) {
-                if (navShowTimeout) {
-                    clearTimeout(navShowTimeout);
-                    navShowTimeout = null;
-                }
-                nav.classList.add('nav-hidden');
-            } else if (currentScrollY < lastScrollY && !navPickerDropdown.classList.contains('show')) {
-                // Saat scroll naik:
-                if (currentScrollY < 100) {
-                    // Di paling atas layar, munculkan langsung
-                    if (navShowTimeout) {
-                        clearTimeout(navShowTimeout);
-                        navShowTimeout = null;
+            if (!isScrollTicking) {
+                isScrollTicking = true;
+                requestAnimationFrame(() => {
+                    if (!currentActiveFolder || isRestoringScroll) {
+                        isScrollTicking = false;
+                        return;
                     }
-                    nav.classList.remove('nav-hidden');
-                } else if (nav.classList.contains('nav-hidden') && !navShowTimeout) {
-                    // Tunda 3 detik sebelum memunculkan navbar kembali
-                    navShowTimeout = setTimeout(() => {
-                        nav.classList.remove('nav-hidden');
-                        navShowTimeout = null;
-                    }, 3000);
-                }
+
+                    const activeIdx = getCurrentActiveArticleIndex();
+
+                    if (activeIdx !== currentActiveArtIdx) {
+                        updateActiveArticleState(activeIdx);
+                    }
+
+                    // Preload runway selalu 5 gambar ke depan di setiap posisi scroll!
+                    preloadRunway(activeIdx);
+
+                    isScrollTicking = false;
+                });
             }
-            lastScrollY = currentScrollY;
 
             if (saveScrollTimeout) clearTimeout(saveScrollTimeout);
             saveScrollTimeout = setTimeout(() => {
-                if (!currentActiveFolder) return;
-                const frames = doomFeed.querySelectorAll('.article-frame');
-                const viewportCenter = window.scrollY + (window.innerHeight / 2);
-                let currentArtIdx = 1;
-
-                frames.forEach(frame => {
-                    const top = frame.offsetTop;
-                    const height = frame.offsetHeight;
-                    if (viewportCenter >= top && viewportCenter < (top + height)) {
-                        currentArtIdx = parseInt(frame.getAttribute('data-index'), 10) || 1;
-                    }
-                });
-
-                updateActiveArticleState(currentArtIdx);
-
-                setStorage('mkt_pos_' + currentActiveFolder.rawName, JSON.stringify({
-                    scrollY: Math.round(window.scrollY),
-                    artIdx: currentArtIdx,
-                    total: currentActiveFolder.imageCount,
-                    ts: Date.now()
-                }));
-            }, 150);
+                if (!currentActiveFolder || isRestoringScroll) return;
+                saveCurrentPosition(false);
+            }, 100);
         }
         window.addEventListener('scroll', handleReaderScroll, { passive: true });
 
-        // Munculkan navbar jika kursor digerakkan ke bagian atas layar (< 50px)
-        document.addEventListener('mousemove', (e) => {
-            if (currentActiveFolder && e.clientY < 50) {
-                if (navShowTimeout) {
-                    clearTimeout(navShowTimeout);
-                    navShowTimeout = null;
-                }
-                nav.classList.remove('nav-hidden');
+        // Tap/Click Screen Listener: Tekan atas muncul, tekan bagian lain lenyap
+        document.addEventListener('click', (e) => {
+            if (!currentActiveFolder) return;
+
+            if (e.target.closest('#readerNav') || e.target.closest('#restoreToast')) {
+                return;
+            }
+
+            if (e.clientY <= 90) {
+                toggleNav();
+            } else {
+                hideNav();
             }
         });
 
         // ================= SEARCH IMPLEMENTATION =================
         const searchInput = document.getElementById('globalSearchInput');
-        const clearBtn = document.getElementById('clearSearchBtn');
-        const dropdown = document.getElementById('searchDropdown');
+        const searchClearBtn = document.getElementById('clearSearchBtn');
+        const searchDropdown = document.getElementById('searchDropdown');
         const resultList = document.getElementById('searchResultList');
-        const matchCountEl = document.getElementById('searchMatchCount');
-        const searchWrapper = document.getElementById('searchWrapper');
+        const resultCount = document.getElementById('searchMatchCount');
 
-        let selectedResultIndex = -1;
+        let searchItems = [];
+        let selectedIndex = -1;
 
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
+        libraryData.forEach(folder => {
+            folder.images.forEach((img, idx) => {
+                searchItems.push({
+                    folderRawName: folder.rawName,
+                    folderDisplayName: folder.displayName,
+                    folderTheme: folder.theme,
+                    folderNumber: folder.number,
+                    articleIndex: idx + 1,
+                    fileName: img.name,
+                    cleanTitle: img.cleanTitle || img.name,
+                    searchKey: (img.name + ' ' + (img.cleanTitle || '') + ' ' + folder.displayName).toLowerCase()
+                });
+            });
+        });
 
-        function escapeRegex(str) {
-            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
-        function highlightMatch(text, query) {
-            if (!query) return escapeHtml(text);
-            const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
-            return escapeHtml(text).replace(regex, '<mark class="match-mark">$1</mark>');
-        }
-
-        function performSearch() {
-            const query = searchInput.value.trim().toLowerCase();
-            clearBtn.style.display = query ? 'block' : 'none';
-
-            if (!query) {
-                dropdown.classList.remove('active');
-                resultList.innerHTML = '';
-                selectedResultIndex = -1;
+        function performSearch(query) {
+            const q = query.trim().toLowerCase();
+            if (!q) {
+                closeSearch();
                 return;
             }
 
-            const matches = searchableArticles.filter(item => {
-                return item.fileName.toLowerCase().includes(query) ||
-                       item.cleanTitle.toLowerCase().includes(query) ||
-                       item.folderName.toLowerCase().includes(query);
+            const terms = q.split(/\s+/).filter(t => t.length > 0);
+            const matches = searchItems.filter(item => {
+                return terms.every(term => item.searchKey.includes(term));
             });
 
-            const topMatches = matches.slice(0, 3);
-            selectedResultIndex = -1;
-
-            if (topMatches.length === 0) {
-                matchCountEl.textContent = '0 cocok';
-                resultList.innerHTML = `<div class="dropdown-empty">Tidak ada artikel yang cocok dengan "<strong>${escapeHtml(query)}</strong>" 🌸</div>`;
-            } else {
-                matchCountEl.textContent = `${matches.length} ditemukan (menampilkan ${topMatches.length})`;
-                resultList.innerHTML = topMatches.map((item, i) => `
-                    <div class="search-result-item" data-index="${i}" onclick="selectSearchResult('${encodeURIComponent(item.folderRaw)}', ${item.articleIndex})">
-                        <div class="result-folder-icon">${item.folderIcon}</div>
-                        <div class="result-text-block">
-                            <div class="result-title-line">
-                                <span class="result-path-folder">${highlightMatch(item.folderName, query)}</span>
-                                <span style="color: #A0AEC0; margin: 0 0.25rem;">/</span>
-                                <span>${highlightMatch(item.fileName, query)}</span>
-                            </div>
-                            <div class="result-path-line">
-                                <span>📄 Artikel #${item.articleIndex}</span>
-                            </div>
-                        </div>
-                        <span class="result-arrow">→</span>
-                    </div>
-                `).join('');
-            }
-
-            dropdown.classList.add('active');
+            renderSearchResults(matches, terms, q);
         }
 
-        window.selectSearchResult = function(folderRawEscaped, artIdx) {
-            const folderRaw = decodeURIComponent(folderRawEscaped);
-            dropdown.classList.remove('active');
-            openReader(folderRaw, artIdx, true);
-        };
+        function renderSearchResults(results, terms, rawQuery) {
+            selectedIndex = -1;
+            if (results.length === 0) {
+                if (resultCount) resultCount.textContent = '0 Hasil';
+                resultList.innerHTML = '<div class="dropdown-empty">Tidak ada artikel yang cocok dengan "<strong>' + escapeHtml(rawQuery) + '</strong>"</div>';
+                searchDropdown.classList.add('active');
+                return;
+            }
 
-        searchInput.addEventListener('input', performSearch);
-        searchInput.addEventListener('focus', () => {
-            if (searchInput.value.trim()) dropdown.classList.add('active');
+            const maxResults = 15;
+            const shownResults = results.slice(0, maxResults);
+            if (resultCount) resultCount.textContent = results.length + ' Hasil' + (results.length > maxResults ? ' (Top 15)' : '');
+
+            let html = '';
+            shownResults.forEach((res, idx) => {
+                let displayTitle = escapeHtml(res.cleanTitle);
+                terms.forEach(term => {
+                    if (!term) return;
+                    const regex = new RegExp('(' + escapeRegExp(term) + ')', 'gi');
+                    displayTitle = displayTitle.replace(regex, '<span class="match-mark">$1</span>');
+                });
+
+                html += '<div class="search-result-item" data-index="' + idx + '" data-folder="' + res.folderRawName + '" data-art="' + res.articleIndex + '">';
+                html += '<span class="result-folder-icon">';
+                html += '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>';
+                html += '</span>';
+                html += '<div class="result-text-block">';
+                html += '<div class="result-title-line">' + displayTitle + '</div>';
+                html += '<div class="result-path-line">';
+                html += '<span class="result-path-folder">' + escapeHtml(res.folderDisplayName) + '</span> • Artikel #' + res.articleIndex;
+                html += '</div>';
+                html += '</div>';
+                html += '<span class="result-arrow">›</span>';
+                html += '</div>';
+            });
+
+            resultList.innerHTML = html;
+            searchDropdown.classList.add('active');
+
+            const items = resultList.querySelectorAll('.search-result-item');
+            items.forEach(el => {
+                el.addEventListener('click', () => {
+                    const fName = el.getAttribute('data-folder');
+                    const aIdx = parseInt(el.getAttribute('data-art'), 10);
+                    closeSearch();
+                    openReader(fName, aIdx);
+                });
+            });
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function closeSearch() {
+            searchDropdown.classList.remove('active');
+            resultList.innerHTML = '';
+            selectedIndex = -1;
+        }
+
+        searchInput.addEventListener('input', () => {
+            const val = searchInput.value;
+            if (searchClearBtn) searchClearBtn.style.display = val ? 'flex' : 'none';
+            performSearch(val);
         });
 
-        clearBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            dropdown.classList.remove('active');
-            clearBtn.style.display = 'none';
-            searchInput.focus();
-        });
+        if (searchClearBtn) {
+            searchClearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                searchClearBtn.style.display = 'none';
+                closeSearch();
+                searchInput.focus();
+            });
+        }
 
         searchInput.addEventListener('keydown', (e) => {
-            const items = dropdown.querySelectorAll('.search-result-item');
-            if (e.key === 'Escape') {
-                dropdown.classList.remove('active');
-            } else if (e.key === 'ArrowDown') {
-                if (items.length > 0) {
-                    e.preventDefault();
-                    selectedResultIndex = (selectedResultIndex + 1) % items.length;
-                    updateSelectedDropdownItem(items);
-                }
+            if (!searchDropdown.classList.contains('active')) return;
+            const items = resultList.querySelectorAll('.search-result-item');
+            if (!items.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateSelection(items);
             } else if (e.key === 'ArrowUp') {
-                if (items.length > 0) {
-                    e.preventDefault();
-                    selectedResultIndex = (selectedResultIndex - 1 + items.length) % items.length;
-                    updateSelectedDropdownItem(items);
-                }
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateSelection(items);
             } else if (e.key === 'Enter') {
-                if (selectedResultIndex >= 0 && items[selectedResultIndex]) {
-                    e.preventDefault();
-                    items[selectedResultIndex].click();
+                e.preventDefault();
+                if (selectedIndex >= 0 && selectedIndex < items.length) {
+                    items[selectedIndex].click();
                 } else if (items.length > 0) {
-                    e.preventDefault();
                     items[0].click();
                 }
+            } else if (e.key === 'Escape') {
+                closeSearch();
             }
         });
 
-        function updateSelectedDropdownItem(items) {
-            items.forEach((item, idx) => {
-                item.classList.toggle('selected', idx === selectedResultIndex);
+        function updateSelection(items) {
+            items.forEach((item, i) => {
+                if (i === selectedIndex) {
+                    item.classList.add('selected');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('selected');
+                }
             });
         }
 
-        // Init route on page load
-        handleRouteChange();
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#searchWrapper')) {
+                closeSearch();
+            }
+            if (!e.target.closest('.card-dropdown-wrapper')) {
+                document.querySelectorAll('.card-dropdown-menu.show').forEach(m => m.classList.remove('show'));
+                document.querySelectorAll('.btn-card-list.active').forEach(b => b.classList.remove('active'));
+            }
+        });
+
+        window.toggleCardDropdown = function(btn) {
+            const wrapper = btn.closest('.card-dropdown-wrapper');
+            const menu = wrapper.querySelector('.card-dropdown-menu');
+            const wasOpen = menu.classList.contains('show');
+
+            document.querySelectorAll('.card-dropdown-menu.show').forEach(m => m.classList.remove('show'));
+            document.querySelectorAll('.btn-card-list.active').forEach(b => b.classList.remove('active'));
+
+            if (!wasOpen) {
+                menu.classList.add('show');
+                btn.classList.add('active');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const { baca, art } = parseParams();
+            if (baca && folderMap[baca]) {
+                openReader(baca, art, false);
+            } else {
+                renderHome();
+            }
+        });
+
     </script>
 </body>
 </html>
-HTML;
+HTML_TPL;
 
     return str_replace(
         ['###FOLDERS_JSON###', '###CARDS_HTML###', '###GENERATED_AT###', '###TOTAL_FOLDERS###', '###TOTAL_ARTICLES###'],
@@ -1852,7 +1896,7 @@ file_put_contents($htmlFile, $htmlContent);
 // Tampilan CLI jika dijalankan di Terminal
 if (php_sapi_name() === 'cli') {
     echo "=== REINDEX SELESAI ===\n";
-    echo "Total Folder Aktif : " . count($foldersData) . "\n";
+    echo "Total Folder Aktif  : " . count($foldersData) . "\n";
     echo "Total Artikel Visual: " . $totalArticles . "\n";
     echo "JSON Cache          : index.json (" . formatBytes(strlen($jsonEncoded)) . ")\n";
     echo "Baked Standalone    : index.html (" . formatBytes(strlen($htmlContent)) . ")\n";
@@ -1872,7 +1916,7 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reindex Selesai 🌸 Marketing Visual Vault</title>
+    <title>Reindex Selesai • VIS Marketing</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
@@ -1880,22 +1924,19 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #FFFDF9;
-            background-image: 
-                radial-gradient(circle at 15% 20%, #FFEBF0 0%, transparent 40%),
-                radial-gradient(circle at 85% 80%, #EBF4FF 0%, transparent 40%);
+            background: #0F1117;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
-            color: #2B2D42;
+            color: #E2E8F0;
         }
         .card {
-            background: #FFFFFF;
-            border: 1.5px solid #F1E5D8;
+            background: #1A1D27;
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 24px;
-            box-shadow: 0 12px 32px rgba(180, 140, 120, 0.1);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.5);
             max-width: 520px;
             width: 100%;
             padding: 2.25rem 2rem;
@@ -1912,21 +1953,21 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
             100% { transform: translateY(-8px); }
         }
         h1 {
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.6rem;
             font-weight: 800;
             margin-bottom: 0.5rem;
-            color: #2B2D42;
+            color: #FFFFFF;
         }
         p {
-            color: #718096;
+            color: #94A3B8;
             font-size: 0.92rem;
             margin-bottom: 1.5rem;
             line-height: 1.45;
         }
         .stats-box {
-            background: #FDF9F5;
-            border: 1px dashed #EADBCE;
+            background: #14161F;
+            border: 1px dashed rgba(255,255,255,0.12);
             border-radius: 16px;
             padding: 1rem;
             margin-bottom: 1.75rem;
@@ -1935,14 +1976,13 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
             text-align: center;
         }
         .stat-val {
-            font-family: 'Quicksand', sans-serif;
             font-size: 1.35rem;
             font-weight: 800;
             color: #FF5A87;
         }
         .stat-lbl {
             font-size: 0.75rem;
-            color: #718096;
+            color: #94A3B8;
             font-weight: 600;
         }
         .btn-group {
@@ -1959,7 +1999,6 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
             background: linear-gradient(135deg, #FF758C 0%, #FF5A87 100%);
             color: #FFFFFF;
             text-decoration: none;
-            font-family: 'Quicksand', sans-serif;
             font-size: 0.95rem;
             font-weight: 700;
             padding: 0.75rem 1rem;
@@ -1976,10 +2015,9 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
         }
         .btn-sec {
             flex: 1;
-            background: #F4ECE3;
-            color: #2B2D42;
+            background: rgba(255,255,255,0.06);
+            color: #E2E8F0;
             text-decoration: none;
-            font-family: 'Quicksand', sans-serif;
             font-size: 0.9rem;
             font-weight: 700;
             padding: 0.75rem 1rem;
@@ -1991,15 +2029,15 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
             transition: background 0.2s ease;
         }
         .btn-sec:hover {
-            background: #E8DCD1;
+            background: rgba(255,255,255,0.12);
         }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="badge-icon">✨🌸</div>
+        <div class="badge-icon">⚡✨</div>
         <h1>Reindex Berhasil!</h1>
-        <p>File <code>index.json</code> dan <strong><code>index.html</code> (Baked Standalone)</strong> telah diperbarui dengan data <strong><?= $totalArticles ?> artikel</strong> terbaru.</p>
+        <p>File <code>index.json</code> dan <strong><code>index.html</code> (VIS Marketing)</strong> telah diperbarui dengan data <strong><?= $totalArticles ?> artikel</strong> terbaru.</p>
 
         <div class="stats-box">
             <div>
@@ -2019,13 +2057,9 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
         <div class="btn-group">
             <a href="index.html" class="btn-main">
                 <span>⚡</span>
-                <span>Buka Baked index.html (Lokal)</span>
+                <span>Buka VIS Marketing</span>
             </a>
             <div class="btn-row">
-                <a href="index.php" class="btn-sec">
-                    <span>🎀</span>
-                    <span>Versi index.php</span>
-                </a>
                 <a href="reindex.php" class="btn-sec">
                     <span>🔄</span>
                     <span>Reindex Lagi</span>
